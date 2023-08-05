@@ -1,2 +1,1 @@
-# nn_library_lesson
-Neural network library for teaching myself about NN-s
+The idea behind this project is to build a neural network library from scratch just to teach myself about NN-s.
