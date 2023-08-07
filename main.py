@@ -1,7 +1,8 @@
 import numpy as np
 from model import Model
 from linear import Linear
-from activation import Activation
+
+np.random.seed(1)
 
 # training data
 x_train = np.array([[[0, 0]], [[0, 1]], [[1, 0]], [[1, 1]]])
@@ -10,10 +11,12 @@ y_train = np.array([[[0]], [[1]], [[1]], [[0]]])
 # Build model
 model = Model(
     [
-        Linear(2, 3),
-        Activation('relu'),
-        Linear(3, 1),
-        Activation('relu'),
+        Linear(2, 3, activation='tanh'),
+        Linear(3, 1, activation='tanh'),
+        # Linear(2, 3),
+        # Activation('relu'),
+        # Linear(3, 1),
+        # Activation('relu'),
     ]
 )
 
