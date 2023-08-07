@@ -8,3 +8,6 @@ class Layer:
 
     def backward(self, output_error, learning_rate):
         raise NotImplementedError
+
+    def update(self, learning_rate):
+        raise NotImplementedError
