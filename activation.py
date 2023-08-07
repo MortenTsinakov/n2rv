@@ -13,5 +13,5 @@ class Activation(Layer):
         self.output = self.activation(self.input)
         return self.output
 
-    def backward(self, output_error, learning_rate):
+    def backward(self, output_error):
         return self.activation_derivative(self.input) * output_error
