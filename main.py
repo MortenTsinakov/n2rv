@@ -4,8 +4,9 @@ from linear import Linear
 
 
 def create_model():
-    inputs = Linear(input_size=2, output_size=3, activation='tanh')
-    outputs = Linear(output_size=1, activation='tanh')(inputs)
+    inputs = Linear(input_size=2, output_size=8, activation='tanh')
+    x = Linear(output_size=4, activation='tanh')(inputs)
+    outputs = Linear(output_size=1, activation='tanh')(x)
 
     print(inputs.weights.shape)
     print(outputs.weights.shape)
