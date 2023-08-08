@@ -21,8 +21,6 @@ class Model:
             if current.previous_layer and\
                current.previous_layer not in outputs:
                 outputs.append(current.previous_layer)
-        for layer in self.layers:
-            print(layer.name)
 
     def use_loss_function(self, function):
         """Define the loss function being used."""
@@ -47,18 +45,30 @@ class Model:
         n_samples = len(x_train)
 
         for i in range(epochs):
-            err = 0
+            self.err = 0
             for j in range(n_samples):
-                self.inputs.forward(x_train[j])
-                for layer in reversed(self.layers[:-1]):
-                    layer.forward(layer.previous_layer.output)
-                output = self.layers[0].output
-                err += self.loss(y_train[j], output)
-                error = self.loss_derivative(y_train[j], output)
-                for layer in self.layers:
-                    error = layer.backward(error)
-                for layer in self.layers:
-                    layer.update(learning_rate)
-            err /= n_samples
+                self.forward(x_train[j])
+                self.backward(y_train[j])
+                self.update(learning_rate)
+            self.err /= n_samples
             if print_loss:
-                print(f"Epoch: {i + 1}/{epochs}    error={err}")
+                print(f"Epoch: {i + 1}/{epochs}    error={round(self.err, 7)}")
+        return self.err
+
+    def forward(self, x):
+        self.inputs.forward(x)
+        for layer in reversed(self.layers[:-1]):
+            layer.forward(layer.previous_layer.output)
+
+    def backward(self, x):
+        # Calculate loss
+        output = self.layers[0].output
+        self.err += self.loss(x, output)
+        error = self.loss_derivative(x, output)
+        # Backward pass
+        for layer in self.layers:
+            error = layer.backward(error)
+
+    def update(self, learning_rate):
+        for layer in self.layers:
+            layer.update(learning_rate)
