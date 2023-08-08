@@ -1,5 +1,6 @@
 \documentclass{article}
 \usepackage{amsmath}
+\usepackage{hyperref}
 \usepackage{pythonhighlight}
 \setlength\parindent{0pt}
 
@@ -25,9 +26,11 @@ to write down some notes that I will have found useful. \\
 \textbf{Building the base for the project} \\
 
 To start out, I found a very nice tutorial:\\
-https://towardsdatascience.com/math-neural-network-from-scratch-in-python-d6da9f29ce65 \\
+\href{https://towardsdatascience.com/math-neural-network-from-scratch-in-python-d6da9f29ce65}{Simple neural networks tutorial} \\
+For understanding backpropagation, Andrej Karpathy's tutorials were incredibly helpful: \\
+\href{https://www.youtube.com/watch?v=VMj-3S1tku0&list=PLAqhIrjkxbuWI23v9cThsA9GvCAUhRvKZ}{Andrej Karpathy's series on neural networks} \\
 
-It explains how to build a (very) basic library using only fully connected
+The first one explains how to build a (very) basic library using only fully connected
 layers, a Tanh activation function and a Mean Squared Error function 
 for calculating the loss. \\
 
@@ -110,5 +113,81 @@ Changes that I didn't yet make, but might be a good idea:
     \item Adding layers in a list or one after another and calling reverse(layers) in the model when backpropagating works only in a sequential model. At some point in the future it would 
     be good to build a better way of organizing the layers so that non-sequential models could be built.
 \end{itemize}
+
+\textbf{Defining layers with activation functions and creating models functionally} \\
+
+I managed to fix three of the points listed in the previous paragraph. \\
+
+First, the activation functions are now connected to the Linear layers. So when creating a linear layer, activation function is passed 
+as an argument. \\
+
+Second, the weights are initialized as a normal distribution and biases as zeros. I will still read about weight initialization techniques later, but 
+for now even this small change seemed to make a difference. \\
+
+Third, I changed the way the models are created. Instead of adding layers one by one or passing them as a list, the layers are created functionally. Each layer created remembers 
+the layer that precedes it. So basically, a unidirectional graph of layers is created.
+\pagebreak
+
+Instead of defining a model like this:
+\begin{python}
+    net = Network()
+    net.add(FCLayer(2, 3))
+    net.add(ActivationLayer(tanh, tanh_prime))
+    net.add(FCLayer(3, 1))
+    net.add(ActivationLayer(tanh, tanh_prime))
+\end{python}
+
+Or like this:
+\begin{python}
+    model = Model(
+        [
+            Linear(2, 3),
+            Activation('tanh'),
+            Linear(3, 1),
+            Activation('tanh'),
+        ]
+    )
+\end{python}
+
+It is done like this:
+\begin{python}
+    def create_model():
+        inputs = Linear(input_size=2, output_size=8, activation='tanh')
+        x = Linear(output_size=4, activation='sigmoid')(inputs)
+        outputs = Linear(output_size=1, activation='relu')(x)
+
+        model = Model(inputs, [outputs])
+        return model
+\end{python}
+
+Then the model is compiled: the layers are organized in the correct order so that 
+the forward pass and backward pass are done correctly. \\
+
+Hopefully, this approach allows for creating non-sequential models in the future. So in theory it should 
+be possible to make something like this for example:
+\begin{python}
+    def create_model():
+        # Base model
+        base_in = Layer(input_dim, output_dim, activation)
+        x = Layer(output_dim, activation)(base_in)
+        x = Layer(output_dim, activation)(x)
+        base_out = Layer(output_dim, activation)(x)
+
+        # First branch
+        b1_1 = Layer(output_dim, activation)(base_out)
+        b1_2 = Layer(output_dim, activation)(b1_1)
+        b1_out = Layer(output_dim, activation)(b1_2)
+
+        # Second branch
+        b2_1 = Layer(output_dim, activation)(base_out)
+        b2_2 = Layer(output_dim, activation)(b2_1)
+        b2_out = Layer(output_dim, activation)(b2_2)
+
+        model = Model(base_in, [b1_out, b2_out])
+\end{python}
+
+Of course, the way forward pass, backward pass and updates work, had to be changed as well because of this 
+way of creating models. I feel that long-term it's better to have this kind of system for creating models even 
+though at the moment it doesn't make much difference (probably makes things slightly more difficult even?).
 
 \end{document}
