@@ -8,10 +8,6 @@ class Model:
         self.loss = None
         self.loss_derivative = None
 
-    def add_layer(self, layer):
-        """Add a layer to the model."""
-        self.layers.append(layer)
-
     def compile(self) -> None:
         outputs = [x for x in self.outputs]
         self.layers = []
