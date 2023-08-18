@@ -35,9 +35,8 @@ def softmax(x):
 
 def softmax_derivative(x, output_error):
     s = softmax(x)
-    ds = np.diag(s) - np.outer(s, s.T)
-    dx = np.dot(output_error, ds)
-    return dx
+    s = np.exp(s) / np.sum(np.exp(s), axis=1, keepdims=True)
+    return (s * (1 - s)) * output_error
 
 
 def get_function(function):
