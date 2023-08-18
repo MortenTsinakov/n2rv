@@ -22,7 +22,7 @@ loss = model.fit(x_train,
                  y_train,
                  epochs=500,
                  learning_rate=0.1,
-                 print_loss=False)
+                 print_loss=True)
 
 print(f"Loss: {round(loss, 4)}")
 
