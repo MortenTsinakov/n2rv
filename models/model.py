@@ -8,7 +8,12 @@ class Model:
         self.loss = None
         self.loss_derivative = None
 
-    def compile(self) -> None:
+    def compile(self, loss_fn) -> None:
+        # Add loss function
+        loss_fn = loss.get_loss(loss_fn)
+        self.loss = loss_fn[0]
+        self.loss_derivative = loss_fn[1]
+        # Create a layer graph
         outputs = [x for x in self.outputs]
         self.layers = []
         while outputs:
@@ -17,12 +22,6 @@ class Model:
             if current.previous_layer and\
                current.previous_layer not in outputs:
                 outputs.append(current.previous_layer)
-
-    def use_loss_function(self, function):
-        """Define the loss function being used."""
-        function = loss.get_loss(function)
-        self.loss = function[0]
-        self.loss_derivative = function[1]
 
     def predict(self, input_data):
         n_samples = len(input_data)

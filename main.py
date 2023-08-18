@@ -17,8 +17,7 @@ x_train = np.array([[[0, 0]], [[0, 1]], [[1, 0]], [[1, 1]]])
 y_train = np.array([[[0]], [[1]], [[1]], [[0]]])
 
 model = create_model()
-model.use_loss_function('mse')
-model.compile()
+model.compile(loss_fn='mse')
 loss = model.fit(x_train,
                  y_train,
                  epochs=500,
