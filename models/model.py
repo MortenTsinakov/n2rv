@@ -1,4 +1,4 @@
-import losses.loss as loss
+from losses import loss
 
 
 class Model:
@@ -10,9 +10,10 @@ class Model:
 
     def compile(self, loss_fn) -> None:
         # Add loss function
-        loss_fn = loss.get_loss(loss_fn)
-        self.loss = loss_fn[0]
-        self.loss_derivative = loss_fn[1]
+        self.loss = loss.Loss(loss_fn)
+        # loss_fn = loss_functions.get_loss(loss_fn)
+        # self.loss = loss_fn[0]
+        # self.loss_derivative = loss_fn[1]
         # Create a layer graph
         outputs = [x for x in self.outputs]
         self.layers = []
@@ -58,8 +59,8 @@ class Model:
     def backward(self, x):
         # Calculate loss
         output = self.layers[0].output
-        self.err += self.loss(x, output)
-        error = self.loss_derivative(x, output)
+        self.err += self.loss.forward(x, output)
+        error = self.loss.backward(x, output)
         # Backward pass
         for layer in self.layers:
             error = layer.backward(error)
