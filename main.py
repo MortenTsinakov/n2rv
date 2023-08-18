@@ -1,6 +1,6 @@
 import numpy as np
-from model import Model
-from linear import Linear
+from models.model import Model
+from layers.linear import Linear
 
 
 def create_model():
