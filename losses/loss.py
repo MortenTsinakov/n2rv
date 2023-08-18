@@ -1,22 +1,14 @@
-import numpy as np
+from losses import loss_functions
 
 
-def mse(y_true, y_pred):
-    return np.mean(np.power(y_true - y_pred, 2))
+class Loss:
+    def __init__(self, loss_function) -> None:
+        loss = loss_functions.get_loss(loss_function)
+        self.loss = loss[0]
+        self.loss_derivative = loss[1]
 
+    def forward(self, y_true, y_pred):
+        return self.loss(y_true, y_pred)
 
-def mse_derivative(y_true, y_pred):
-    return 2 * (y_pred - y_true) / y_true.size
-
-
-def get_loss(function):
-    if function not in losses.keys():
-        raise ValueError(
-            f"Requested loss is not supported: {function}"
-        )
-    return losses[function]
-
-
-losses = {
-    'mse': [mse, mse_derivative],
-}
+    def backward(self, y_true, y_pred):
+        return self.loss_derivative(y_true, y_pred)

@@ -188,6 +188,24 @@ be possible to make something like this for example:
 
 Of course, the way forward pass, backward pass and updates work, had to be changed as well because of this 
 way of creating models. I feel that long-term it's better to have this kind of system for creating models even 
-though at the moment it doesn't make much difference (probably makes things slightly more difficult even?).
+though at the moment it doesn't make much difference (probably makes things slightly more difficult even?). \\
+
+\textbf{Adding loss functions on model compilation} \\
+
+Instead of adding loss functions like this:
+\begin{python}
+    model.use_loss_function('mse')
+\end{python}
+
+I changed it so that the loss function is defined when the model is compiled:
+\begin{python}
+    model.compile(loss_fn='mse')
+\end{python}
+
+I also made a separate class for a loss function and created forward and backward methods for it. I thought 
+that this way it would be more consistent with the rest of the code. \\
+
+Besides changing loss functions, I organized files into their folders so that in the future it would be easier
+to find what's needed.
 
 \end{document}
