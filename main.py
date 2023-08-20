@@ -4,10 +4,10 @@ from layers.linear import Linear
 
 
 def create_model():
-    inputs = Linear(input_size=2, output_size=6, activation='relu')
-    # x = Linear(output_size=4, activation='relu')(inputs)
+    inputs = Linear(input_size=2, output_size=6, activation='tanh')
+    x = Linear(output_size=4, activation='relu')(inputs)
     # outputs = Linear(output_size=1, activation='relu')(x)
-    outputs = Linear(output_size=2, activation='softmax')(inputs)
+    outputs = Linear(output_size=2, activation='softmax')(x)
 
     model = Model(inputs, [outputs])
     return model
@@ -33,4 +33,4 @@ print(f"Loss: {round(loss, 4)}")
 
 # test
 out = np.array(model.predict(x_train))
-print(out)
+print(np.round(out, 2))
