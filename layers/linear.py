@@ -28,7 +28,7 @@ class Linear(Layer):
         self.bias = np.zeros(self.output_size)
 
     def forward(self, input_data):
-        self.input = input_data
+        self.input = np.reshape(input_data, (input_data.shape[0], -1))
         self.output = np.dot(self.input, self.weights) + self.bias
         self.output = self.activation.forward(self.output)
         return self.output
