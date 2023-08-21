@@ -18,7 +18,7 @@ def cat_cross_e(y_true, y_pred):
 
 def cat_cross_e_derivative(y_true, y_pred):
     """Derivative function for categorical cross entropy."""
-    return -y_true / y_pred
+    return y_pred - y_true
 
 
 def get_loss(function):

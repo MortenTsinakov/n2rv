@@ -22,12 +22,12 @@ y_train = np.array([[[1, 0]], [[0, 1]], [[0, 1]], [[1, 0]]])
 
 model = create_model()
 # model.compile(loss_fn='mse')
-model.compile(loss_fn='mse')
+model.compile(loss_fn='categorical_cross_entropy')
 loss = model.fit(x_train,
                  y_train,
                  epochs=500,
-                 learning_rate=0.03,
-                 print_loss=False)
+                 learning_rate=0.1,
+                 print_loss=True)
 
 print(f"Loss: {round(loss, 4)}")
 
