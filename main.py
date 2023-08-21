@@ -25,9 +25,9 @@ model = create_model()
 model.compile(loss_fn='categorical_cross_entropy')
 loss = model.fit(x_train,
                  y_train,
-                 epochs=500,
-                 learning_rate=0.1,
-                 print_loss=True)
+                 epochs=1000,
+                 learning_rate=0.03,
+                 print_loss=False)
 
 print(f"Loss: {round(loss, 4)}")
 
