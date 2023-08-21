@@ -5,6 +5,7 @@ import activations.activation_functions as activation_functions
 class Activation(Layer):
     def __init__(self, activation_function) -> None:
         activation = activation_functions.get_function(activation_function)
+        self.name = activation_function
         self.activation = activation[0]
         self.activation_derivative = activation[1]
 

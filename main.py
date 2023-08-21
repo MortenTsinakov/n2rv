@@ -9,7 +9,7 @@ def create_model():
     # outputs = Linear(output_size=1, activation='relu')(x)
     outputs = Linear(output_size=2, activation='softmax')(x)
 
-    model = Model(inputs, [outputs])
+    model = Model(inputs, outputs)
     return model
 
 
@@ -25,8 +25,8 @@ model = create_model()
 model.compile(loss_fn='categorical_cross_entropy')
 loss = model.fit(x_train,
                  y_train,
-                 epochs=1000,
-                 learning_rate=0.03,
+                 epochs=500,
+                 learning_rate=0.05,
                  print_loss=False)
 
 print(f"Loss: {round(loss, 4)}")

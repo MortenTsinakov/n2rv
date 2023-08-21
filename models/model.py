@@ -1,4 +1,5 @@
 from losses import loss
+from exceptions import exception
 
 
 class Model:
@@ -11,18 +12,16 @@ class Model:
     def compile(self, loss_fn) -> None:
         # Add loss function
         self.loss = loss.Loss(loss_fn)
-        # loss_fn = loss_functions.get_loss(loss_fn)
-        # self.loss = loss_fn[0]
-        # self.loss_derivative = loss_fn[1]
+        self.validate()
         # Create a layer graph
-        outputs = [x for x in self.outputs]
+        layers = [self.outputs]
         self.layers = []
-        while outputs:
-            current = outputs.pop(0)
+        while layers:
+            current = layers.pop(0)
             self.layers.append(current)
             if current.previous_layer and\
-               current.previous_layer not in outputs:
-                outputs.append(current.previous_layer)
+               current.previous_layer not in layers:
+                layers.append(current.previous_layer)
 
     def predict(self, input_data):
         n_samples = len(input_data)
@@ -68,3 +67,11 @@ class Model:
     def update(self, learning_rate):
         for layer in self.layers:
             layer.update(learning_rate)
+
+    def validate(self):
+        if self.loss.name == "categorical_cross_entropy":
+            if self.outputs.activation.name != "softmax":
+                raise exception.IncompatibleLayerError(
+                    "Categorical Cross Entropy loss function should be " +
+                    "preceded by Softmax activation function."
+                )

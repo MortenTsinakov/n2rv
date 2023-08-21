@@ -11,12 +11,12 @@ def mse_derivative(y_true, y_pred):
     return 2 * (y_pred - y_true) / y_true.size
 
 
-def cat_cross_e(y_true, y_pred):
+def categorical_cross_entropy_with_softmax(y_true, y_pred):
     """Categorical cross entropy loss function."""
     return -np.sum(y_true * np.log(y_pred))
 
 
-def cat_cross_e_derivative(y_true, y_pred):
+def categorical_cross_entropy_with_softmax_derivative(y_true, y_pred):
     """Derivative function for categorical cross entropy."""
     return y_pred - y_true
 
@@ -31,5 +31,7 @@ def get_loss(function):
 
 losses = {
     'mse': [mse, mse_derivative],
-    'categorical_cross_entropy': [cat_cross_e, cat_cross_e_derivative],
+    'categorical_cross_entropy':
+        [categorical_cross_entropy_with_softmax,
+         categorical_cross_entropy_with_softmax_derivative],
 }
