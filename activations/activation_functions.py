@@ -26,16 +26,15 @@ def sigmoid_derivative(x, output_error):
     return (sig_x * (1 - sig_x)) * output_error
 
 
-def softmax(x):
+def softmax_with_categorical_cross_entropy(x):
     """Stable softmax function."""
     x_shifted = x - np.max(x)
     exps = np.exp(x_shifted)
     return exps / np.sum(exps)
 
 
-def softmax_derivative(x, output_error):
-    s = softmax(x)
-    return (s * (1 - s)) * output_error
+def softmax_with_categorical_cross_entropy_derivative(x, output_error):
+    return output_error
 
 
 def get_function(function):
@@ -50,5 +49,6 @@ activation_functions = {
     'tanh': [tanh, tanh_derivative],
     'relu': [relu, relu_derivative],
     'sigmoid': [sigmoid, sigmoid_derivative],
-    'softmax': [softmax, softmax_derivative],
+    'softmax': [softmax_with_categorical_cross_entropy,
+                softmax_with_categorical_cross_entropy_derivative],
 }
