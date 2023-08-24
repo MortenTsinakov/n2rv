@@ -3,7 +3,7 @@ from activations.activation import Activation
 import numpy as np
 
 
-class Linear(Layer):
+class Dense(Layer):
     def __init__(self, input_size=None,
                  output_size=None,
                  activation=None,

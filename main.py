@@ -1,13 +1,13 @@
 import numpy as np
 from models.model import Model
-from layers.linear import Linear
+from layers.linear import Dense
 
 
 def create_model():
-    inputs = Linear(input_size=2, output_size=6, activation='tanh')
-    x = Linear(output_size=4, activation='relu')(inputs)
+    inputs = Dense(input_size=2, output_size=6, activation='tanh')
+    x = Dense(output_size=4, activation='relu')(inputs)
     # outputs = Linear(output_size=1, activation='relu')(x)
-    outputs = Linear(output_size=2, activation='softmax')(x)
+    outputs = Dense(output_size=2, activation='softmax')(x)
 
     model = Model(inputs, outputs)
     return model
