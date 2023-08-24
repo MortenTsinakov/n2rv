@@ -1,6 +1,6 @@
 import numpy as np
 from models.model import Model
-from layers.linear import Dense
+from layers.dense import Dense
 
 
 def create_model():
