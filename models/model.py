@@ -22,6 +22,7 @@ class Model:
             if current.previous_layer and\
                current.previous_layer not in layers:
                 layers.append(current.previous_layer)
+        self.layers.reverse()
 
     def predict(self, input_data):
         n_samples = len(input_data)
@@ -29,9 +30,9 @@ class Model:
 
         for i in range(n_samples):
             self.inputs.forward(input_data[i])
-            for layer in reversed(self.layers[:-1]):
+            for layer in self.layers[1:]:
                 layer.forward(layer.previous_layer.output)
-            result.append(self.layers[0].output)
+            result.append(self.layers[-1].output)
 
         return result
 
@@ -52,16 +53,16 @@ class Model:
 
     def forward(self, x):
         self.inputs.forward(x)
-        for layer in reversed(self.layers[:-1]):
+        for layer in self.layers[1:]:
             layer.forward(layer.previous_layer.output)
 
     def backward(self, x):
         # Calculate loss
-        output = self.layers[0].output
+        output = self.layers[-1].output
         self.err += self.loss.forward(x, output)
         error = self.loss.backward(x, output)
         # Backward pass
-        for layer in self.layers:
+        for layer in reversed(self.layers):
             error = layer.backward(error)
 
     def update(self, learning_rate):
