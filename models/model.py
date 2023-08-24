@@ -12,7 +12,6 @@ class Model:
     def compile(self, loss_fn) -> None:
         # Add loss function
         self.loss = loss.Loss(loss_fn)
-        self.validate()
         # Create a layer graph
         layers = [self.outputs]
         self.layers = []
@@ -23,6 +22,7 @@ class Model:
                current.previous_layer not in layers:
                 layers.append(current.previous_layer)
         self.layers.reverse()
+        self.validate()
 
     def predict(self, input_data):
         n_samples = len(input_data)
@@ -70,9 +70,26 @@ class Model:
             layer.update(learning_rate)
 
     def validate(self):
+        # if self.loss.name == "categorical_cross_entropy":
+        #     if self.outputs.activation.name != "softmax":
+        #         raise exception.IncompatibleLayerError(
+        #             "Categorical Cross Entropy loss function should be " +
+        #             "preceded by Softmax activation function."
+        #         )
         if self.loss.name == "categorical_cross_entropy":
-            if self.outputs.activation.name != "softmax":
+            if self.layers[-1].activation.name != "softmax":
                 raise exception.IncompatibleLayerError(
-                    "Categorical Cross Entropy loss function should be " +
-                    "preceded by Softmax activation function."
+                    "Categorical Cross Entropy loss should be preceded by " +
+                    "Softmax activation function."
                 )
+        if self.layers[-1].activation.name == "softmax":
+            if self.loss.name != "categorical_cross_entropy":
+                raise exception.IncompatibleLayerError(
+                    "Softmax should be used together with Categorical " +
+                    "Cross Entropy loss."
+                )
+        if "softmax" in [x.activation.name for x in self.layers[:-1]]:
+            raise exception.IncompatibleLayerError(
+                "Softmax should be used only as the activation function " +
+                "for the last layer."
+            )
