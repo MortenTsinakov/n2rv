@@ -14,14 +14,13 @@ in Keras so that we would get some kind of introduction to machine learning with
 diving into details.\\
 
 Even though the course was very interesting, I felt that I wanted to know more about 
-how things work under the hood and decided to build (or at least try to build) a neural network library
+how things work 'under the hood' and decided to build (or at least try to build) a neural network library
 using only Python and Numpy with the intention of learning about the math and algorithms behind the networks in the
 progress.\\
 
 The idea is to build this library without setting any specific targets except for learning
 something new and form an understanding about how those networks work. This document is intended 
-to be a kind of blog in which I will write about the progress I have made. Also I will try 
-to write down some notes that I will have found useful. \\
+to be a kind of blog in which I will write about the progress I have made.\\
 
 \textbf{Building the base for the project} \\
 
@@ -30,176 +29,73 @@ To start out, I found a very nice tutorial:\\
 For understanding backpropagation, Andrej Karpathy's tutorials were incredibly helpful: \\
 \href{https://www.youtube.com/watch?v=VMj-3S1tku0&list=PLAqhIrjkxbuWI23v9cThsA9GvCAUhRvKZ}{Andrej Karpathy's series on neural networks} \\
 
-The first one explains how to build a (very) basic library using only fully connected
-layers, a Tanh activation function and a Mean Squared Error function 
-for calculating the loss. \\
+Following the first tutorial, I built a (very very) basic library that implements a fully connected layer, Tanh function and 
+Mean Squared Error function. The plan is to modify this base project and add new things on top of it. \\
 
-\underline{Fully connected layer} \\
-On initialization a fully connected layer creates a weight matrix in the size (nr of inputs, nr of outputs) and 
-a bias matrix in the size (1, nr of outputs). \\
-On forward pass, it takes a vector of inputs, multiplies each element with a corresponding weight, 
-sums them together and adds bias. So basically it performs the following operation:
-\begin{align*}
-    AW + B
-\end{align*}
-where $AW$ is a matrix multiplication between input vector A and weight matrix W, and B is the bias matrix. \\
+\textbf{First modifications} \\
 
-\underline{Activation function}
-To add non-linearity, the result of fully connected layer is passed through an activation function. For example Tanh function:
-\begin{align*}
-    \frac{e^{x} - e^{-x}}{e^{x} + e^{-x}}
-\end{align*}
+I decided to modify the prject right away. \\
 
-\underline{Loss function} \\
-Loss function is used to estimate the correctness of the prediction (the distance between predicted values and actual values). 
-The bigger the loss the worse the prediction. In ideal the result of the loss function would be 0. \\
-In the tutorial Mean Squared Error function was implemented:
-\begin{align*}
-    MSE = \frac{1}{n} \sum_{i=1}^{n} (y_{i} - \bar{y}_{i}) ^{2}
-\end{align*}
-where $n$ is the number of predicitons, $y$ is the actual answer (label) and $\bar{y}$ is the prediction. \\
+In the original implementation the user would have to add both the activation function and the corresponding derivative 
+function as arguments when creating a new Activation layer. I thought that it would be better if the user could just add 
+the activation function as a string and the program would define the necessary functions itself. \\
 
-To learn, the model goes through three stages (many times):
-\begin{itemize}
-    \item Forward pass - the model passes inputs through the network and makes a prediction
-    \item Backward pass - the model calculates derivatives for each parameter (weight and bias) in the network in relation to the loss using chain rule.
-    \item Update - the model updates each weight by substracting a fraction of the calculated gradient (the size of this fraction is determined by a hyperparameter called learning rate)
-\end{itemize}
-
-I followed the tutorial rather closely, but there were a couple of things I didn't really like. \\
-
-One of them was that in the original implementation, a user would have to add both the activation function and the 
-corresponding derivative function as arguments when adding an activation function to the network:
+Instead of this...:
 \begin{python}
     net.add(ActivationLayer(tanh, tanh_prime))
 \end{python}
-I thought it would be more convenient if a string argument could be used instead and the program would assign 
-the necessary functions itself:
+...an activation layer can be added like this:
 \begin{python}
     net.add(Activation('tanh'))
 \end{python}
 
-I also added the possibility to define the model by just passing a list of layers on initialization. So besides this:
+I also added a Sigmoid activation function and a ReLU activation function. \\
+
+\textbf{Attaching activation functions to the layers} \\
+
+Activation functions are now attached to the layers. When defining a layer, you have to pass an activation function as an
+argument. At the moment it's not possible to create a layer without an activation function but it will be at some point. \\
+
+\textbf{Changes in weight initialization}
+
+The weights for fully connected layers are initialized as a normal distribution and biases as zeros. I would have to read about 
+weight initialization techniques in the future but for now even this small change made a difference. \\
+
+\textbf{Creating models functionally}
+
+Instead of adding layers one by one like this...:
 \begin{python}
-    net = Network()
-    net.add(FCLayer(2, 3))
-    net.add(ActivationLayer(tanh, tanh_prime))
-    net.add(FCLayer(3, 1))
-    net.add(ActivationLayer(tanh, tanh_prime))
-\end{python}
-\pagebreak
-it's also possible to define the model in the following way:
-\begin{python}
-    model = Model(
-        [
-            Linear(2, 3),
-            Activation('tanh'),
-            Linear(3, 1),
-            Activation('tanh'),
-        ]
-    )
-\end{python}
-
-I added a couple of new activation functions and corresponding derivative functions to the project. \\
-
-Changes that I didn't yet make, but might be a good idea:
-\begin{itemize}
-    \item It would probably make sense for the loss function to be a required argument when creating the model instead of adding it after 
-    the model is initialized.
-    \item Activation function doesn't have to be a separate layer, but could be a part of another layer (fully connected layer, convolutional layer and so on)
-    as in an activation layer there are no parameters to update.
-    \item It seems dodgy that on initialization of fully connected layers 0.5 is substracted from each weight and bias matrix element. I should check 
-    out whether this is a standard practice.
-    \item Adding layers in a list or one after another and calling reverse(layers) in the model when backpropagating works only in a sequential model. At some point in the future it would 
-    be good to build a better way of organizing the layers so that non-sequential models could be built.
-\end{itemize}
-
-\textbf{Defining layers with activation functions and creating models functionally} \\
-
-I managed to fix three of the points listed in the previous paragraph. \\
-
-First, the activation functions are now connected to the Linear layers. So when creating a linear layer, activation function is passed 
-as an argument. \\
-
-Second, the weights are initialized as a normal distribution and biases as zeros. I will still read about weight initialization techniques later, but 
-for now even this small change seemed to make a difference. \\
-
-Third, I changed the way the models are created. Instead of adding layers one by one or passing them as a list, the layers are created functionally. Each layer created remembers 
-the layer that precedes it. So basically, a unidirectional graph of layers is created.
-\pagebreak
-
-Instead of defining a model like this:
-\begin{python}
-    net = Network()
-    net.add(FCLayer(2, 3))
-    net.add(ActivationLayer(tanh, tanh_prime))
-    net.add(FCLayer(3, 1))
-    net.add(ActivationLayer(tanh, tanh_prime))
+net = Network()
+net.add(FCLayer(2, 3))
+net.add(ActivationLayer(tanh, tanh_prime))
+net.add(FCLayer(3, 1))
+net.add(ActivationLayer(tanh, tanh_prime))
 \end{python}
 
-Or like this:
+...I liked the idea of adding them functionally, like this:
 \begin{python}
-    model = Model(
-        [
-            Linear(2, 3),
-            Activation('tanh'),
-            Linear(3, 1),
-            Activation('tanh'),
-        ]
-    )
+inputs = Dense(input_size=2, output_size=32, activation='tanh')
+x = Dense(output_size=16, activation='relu')(inputs)
+x = Dense(output_size=8, activation='relu')(x)
+x = Dense(output_size=4, activation='relu')(x)
+outputs = Dense(output_size=1, activation='sigmoid')(x)
+
+model = Model(inputs, outputs)
 \end{python}
 
-It is done like this:
-\begin{python}
-    def create_model():
-        inputs = Linear(input_size=2, output_size=8, activation='tanh')
-        x = Linear(output_size=4, activation='sigmoid')(inputs)
-        outputs = Linear(output_size=1, activation='relu')(x)
-
-        model = Model(inputs, [outputs])
-        return model
-\end{python}
-
-Then the model is compiled: the layers are organized in the correct order so that 
-the forward pass and backward pass are done correctly. \\
-
-Hopefully, this approach allows for creating non-sequential models in the future. So in theory it should 
-be possible to make something like this for example:
-\begin{python}
-    def create_model():
-        # Base model
-        base_in = Layer(input_dim, output_dim, activation)
-        x = Layer(output_dim, activation)(base_in)
-        x = Layer(output_dim, activation)(x)
-        base_out = Layer(output_dim, activation)(x)
-
-        # First branch
-        b1_1 = Layer(output_dim, activation)(base_out)
-        b1_2 = Layer(output_dim, activation)(b1_1)
-        b1_out = Layer(output_dim, activation)(b1_2)
-
-        # Second branch
-        b2_1 = Layer(output_dim, activation)(base_out)
-        b2_2 = Layer(output_dim, activation)(b2_1)
-        b2_out = Layer(output_dim, activation)(b2_2)
-
-        model = Model(base_in, [b1_out, b2_out])
-\end{python}
-
-Of course, the way forward pass, backward pass and updates work, had to be changed as well because of this 
-way of creating models. I feel that long-term it's better to have this kind of system for creating models even 
-though at the moment it doesn't make much difference (probably makes things slightly more difficult even?). \\
+After the layers are defined, the model is compiled and a layer-graph is created from inputs to outputs. 
+I thought that maybe this approach opens up the possibility to create non-sequential graphs in the future. \\
 
 \textbf{Adding loss functions on model compilation} \\
 
-Instead of adding loss functions like this:
+Instead of adding loss functions like this...:
 \begin{python}
-    model.use_loss_function('mse')
+model.use_loss_function('mse')
 \end{python}
 
-I changed it so that the loss function is defined when the model is compiled:
+...I changed it so that the loss function is defined when the model is compiled:
 \begin{python}
-    model.compile(loss_fn='mse')
+model.compile(loss_fn='mse')
 \end{python}
 
 I also made a separate class for a loss function and created forward and backward methods for it. I thought 
@@ -207,5 +103,17 @@ that this way it would be more consistent with the rest of the code. \\
 
 Besides changing loss functions, I organized files into their folders so that in the future it would be easier
 to find what's needed.
+
+\textbf{Categorical Cross-Entropy loss and Softmax activation function} \\
+
+I implemented Categorical Cross-Entropy and a Softmax activation function. So far, it was the 
+most difficult thing to do. I was trying to figure out the respective derivative functions for ages 
+and in the end, failed. Then I discovered that it's a common practice to calculate the derivatives of 
+those functions in tandem, in which case the derivative function is very simple and fast. \\
+
+Because those functions are mostly used together anyway, I decided to make it possible to use them 
+only in combination with each other, write a function that calculates their combined derivative and 
+just move on for now. I might (should?) come back to it at some point in the future (when my math 
+has improved, hopefully).
 
 \end{document}
