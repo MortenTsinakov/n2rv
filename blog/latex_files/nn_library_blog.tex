@@ -114,6 +114,138 @@ those functions in tandem, in which case the derivative function is very simple 
 Because those functions are mostly used together anyway, I decided to make it possible to use them 
 only in combination with each other, write a function that calculates their combined derivative and 
 just move on for now. I might (should?) come back to it at some point in the future (when my math 
-has improved, hopefully).
+has improved, hopefully). \\
+
+\textbf{Testing the project using Iris dataset} \\
+
+Until now I had tested the network only with the basic truth table dataset consisting of 4 examples
+to see if it learns at all, so it was quite exciting to test it with something slightly bigger. I used 
+the Iris dataset which consists of 150 examples each of which has 4 features and is classified 
+into 1 of 3 possible classes. \\
+
+I created a couple of temporary pre-processing functions - to one-hot encode the labels 
+and to divide the dataset into a train set and a test set. The train set had 70\% of the
+samples and the test set 30\%. \\
+
+The model consisted of 3 layers
+\begin{itemize}
+    \item Dense layer with 4 inputs (features) and 8 outputs using Tanh 
+    \item Dense layer with 8 outputs using ReLU
+    \item Dense layer with 3 (possible classes) outputs using Softmax
+\end{itemize}
+
+The model used Categorical Cross-Entroy loss. \\
+
+I was playing around with different learning rates and discovered that 
+0.01 worked the best. 500 epochs were used for training. \\
+
+I trained the model using the training set and then let it predict using the test set. I did this for
+5 times. Each time the train/test split was different as they were created randomly. I got the following results when predicting:
+\begin{itemize}
+    \item 45/45 - 100\%
+    \item 39/45 - 86.67\%
+    \item 45/45 - 100\%
+    \item 44/45 - 97.78\%
+    \item 45/45 - 100\%
+\end{itemize}
+
+I'm rather happy with the results, somehow I was expecting worse. It's a good place to 
+move on from. \\
+I will write the functions that I used to pre-process the data here as well. \\
+
+The function for importing the Iris dataset:
+\begin{python}
+def import_data(filename: str) -> pd.DataFrame:
+    names = [
+        "sepal_length",
+        "sepal_width",
+        "petal_length",
+        "petal_width",
+        "class",
+    ]
+    data = pd.read_csv(filename, names=names)
+    data['class'] = pd.Categorical(data['class'])
+    data['class'] = data['class'].cat.codes
+
+    return data
+\end{python}
+
+The function for one-hot encoding the labels:
+\begin{python}
+def hot_encode(y, n_classes):
+    hot_encoded = np.zeros((len(y), n_classes))
+    for i, c in enumerate(y):
+        hot_encoded[i][c] = 1
+    return hot_encoded
+\end{python}
+
+The function for separating the data into train/test splits:
+\begin{python}   
+def train_test_split(data: pd.DataFrame, split: float) -> np.ndarray:
+    X = data.drop('class', axis='columns').to_numpy()
+    y = data['class'].to_numpy()
+    y = hot_encode(y, 3)
+
+    shuffle = np.arange(len(data))
+    random.shuffle(shuffle)
+    n_split = int(len(data) * split)
+
+    X_train = X[shuffle[:n_split]]
+    y_train = y[shuffle[:n_split]]
+    X_test = X[shuffle[n_split:]]
+    y_test = y[shuffle[n_split:]]
+
+    X_train = np.reshape(X_train, (X_train.shape[0], 1, X_train.shape[-1]))
+    y_train = np.reshape(y_train, (y_train.shape[0], 1, y_train.shape[-1]))
+    X_test = np.reshape(X_test, (X_test.shape[0], 1, X_test.shape[-1]))
+    y_test = np.reshape(y_test, (y_test.shape[0], 1, y_test.shape[-1]))
+
+    return X_train, y_train, X_test, y_test
+\end{python}
+
+The function for building the model (for some reason in this branch the Dense layers were still called Linear layers - I have already changed the name):
+\begin{python}
+def build_model():
+    inputs = Linear(input_size=4, output_size=8, activation='tanh')
+    x = Linear(output_size=8, activation='relu')(inputs)
+    outputs = Linear(output_size=3, activation='softmax')(x)
+
+    model = Model(inputs, outputs)
+    return model
+\end{python}
+
+The function for calculating the accuracy:
+\begin{python}
+def calculate_accuracy(preds, y_test, print_comparison=False):
+    correct = 0
+    for pred, true in zip(preds, y_test):
+        y_pred = np.argmax(pred)
+        y_true = np.argmax(true)
+        if y_pred == y_true:
+            correct += 1
+        if print_comparison:
+            print(y_pred, y_true)
+    print()
+    print(f"Predicted correctly {correct}/{len(preds)} which" +
+          f"is {round(correct / len(preds) * 100, 2)}%")
+\end{python}
+
+Function calls and training-testing the model:
+\begin{python}
+data = import_data('iris.data')
+split = 0.7
+X_train, y_train, X_test, y_test = train_test_split(data, split)
+
+model = build_model()
+model.compile(loss_fn='categorical_cross_entropy')
+model.fit(X_train,
+          y_train,
+          epochs=500,
+          learning_rate=0.01,
+          print_loss=True)
+
+preds = model.predict(X_test)
+accuracy = calculate_accuracy(preds, y_test)
+\end{python}
 
 \end{document}
