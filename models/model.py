@@ -1,18 +1,18 @@
 from losses import loss
 from exceptions import exception
 from layers.input import Input
+import numpy as np
 
 
 class Model:
     def __init__(self, inputs, outputs) -> None:
         self.inputs = inputs
         self.outputs = outputs
-        self.loss = None
-        self.loss_derivative = None
+        self.loss_fn = None
 
     def compile(self, loss_fn) -> None:
         # Add loss function
-        self.loss = loss.Loss(loss_fn)
+        self.loss_fn = loss.Loss(loss_fn)
         # Create a layer graph
         layers = [self.outputs]
         self.layers = []
@@ -27,31 +27,37 @@ class Model:
         self.validate()
 
     def predict(self, input_data):
-        n_samples = len(input_data)
-        result = []
+        n_examples = len(input_data)
+        result = np.zeros(n_examples)
 
-        for i in range(n_samples):
-            self.inputs.forward(input_data[i])
+        for i in range(n_examples):
+            self.inputs.forward(input_data[i: i + 1])
             for layer in self.layers:
                 layer.forward(layer.previous_layer.output)
-            result.append(self.outputs.output)
+            result[i] = self.outputs.output
 
         return result
 
-    def fit(self, x_train, y_train, epochs, learning_rate, print_loss=True):
+    def fit(self, x_train,
+            y_train, epochs,
+            learning_rate,
+            print_loss=True,
+            batch_size=1):
         """Train the model."""
-        n_samples = len(x_train)
+        n_batches = len(x_train) // batch_size
 
-        for i in range(epochs):
-            self.err = 0
-            for j in range(n_samples):
-                self.forward(x_train[j])
-                self.backward(y_train[j])
+        for epoch in range(epochs):
+            self.loss = 0
+            for batch in range(n_batches):
+                X_batch = x_train[batch * batch_size: (batch + 1) * batch_size]
+                y_batch = y_train[batch * batch_size: (batch + 1) * batch_size]
+                self.forward(X_batch)
+                self.backward(y_batch)
                 self.update(learning_rate)
-            self.err /= n_samples
+            self.loss /= n_batches
             if print_loss:
-                print(f"Epoch: {i + 1}/{epochs}    error={round(self.err, 7)}")
-        return self.err
+                print(f"Epoch: {epoch + 1}/{epochs}    error={round(self.loss, 7)}")
+        return self.loss
 
     def forward(self, x):
         self.inputs.forward(x)
@@ -60,25 +66,25 @@ class Model:
 
     def backward(self, x):
         output = self.outputs.output
-        self.err += self.loss.forward(x, output)
-        error = self.loss.backward(x, output)
+        self.loss += self.loss_fn.forward(x, output)
+        derivative = self.loss_fn.backward(x, output)
         # Backward pass
         for layer in reversed(self.layers):
-            error = layer.backward(error)
+            derivative = layer.backward(derivative)
 
     def update(self, learning_rate):
         for layer in self.layers:
             layer.update(learning_rate)
 
     def validate(self):
-        if self.loss.name == "categorical_cross_entropy":
+        if self.loss_fn.name == "categorical_cross_entropy":
             if self.layers[-1].activation.name != "softmax":
                 raise exception.IncompatibleLayerError(
                     "Categorical Cross Entropy loss should be preceded by " +
                     "Softmax activation function."
                 )
-        if self.layers[-1].activation.name == "softmax":
-            if self.loss.name != "categorical_cross_entropy":
+        if self.layers[-1].activation and self.layers[-1].activation.name == "softmax":
+            if self.loss_fn.name != "categorical_cross_entropy":
                 raise exception.IncompatibleLayerError(
                     "Softmax should be used together with Categorical " +
                     "Cross Entropy loss."
