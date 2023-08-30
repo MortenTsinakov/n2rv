@@ -8,12 +8,11 @@ class Model:
     def __init__(self, inputs, outputs) -> None:
         self.inputs = inputs
         self.outputs = outputs
-        self.loss = None
-        self.loss_derivative = None
+        self.loss_fn = None
 
     def compile(self, loss_fn) -> None:
         # Add loss function
-        self.loss = loss.Loss(loss_fn)
+        self.loss_fn = loss.Loss(loss_fn)
         # Create a layer graph
         layers = [self.outputs]
         self.layers = []
@@ -48,17 +47,17 @@ class Model:
         n_batches = len(x_train) // batch_size
 
         for epoch in range(epochs):
-            self.err = 0
+            self.loss = 0
             for batch in range(n_batches):
                 X_batch = x_train[batch * batch_size: (batch + 1) * batch_size]
                 y_batch = y_train[batch * batch_size: (batch + 1) * batch_size]
                 self.forward(X_batch)
                 self.backward(y_batch)
                 self.update(learning_rate)
-            self.err /= n_batches
+            self.loss /= n_batches
             if print_loss:
-                print(f"Epoch: {epoch + 1}/{epochs}    error={round(self.err, 7)}")
-        return self.err
+                print(f"Epoch: {epoch + 1}/{epochs}    error={round(self.loss, 7)}")
+        return self.loss
 
     def forward(self, x):
         self.inputs.forward(x)
@@ -67,25 +66,25 @@ class Model:
 
     def backward(self, x):
         output = self.outputs.output
-        self.err += self.loss.forward(x, output)
-        error = self.loss.backward(x, output)
+        self.loss += self.loss_fn.forward(x, output)
+        derivative = self.loss_fn.backward(x, output)
         # Backward pass
         for layer in reversed(self.layers):
-            error = layer.backward(error)
+            derivative = layer.backward(derivative)
 
     def update(self, learning_rate):
         for layer in self.layers:
             layer.update(learning_rate)
 
     def validate(self):
-        if self.loss.name == "categorical_cross_entropy":
+        if self.loss_fn.name == "categorical_cross_entropy":
             if self.layers[-1].activation.name != "softmax":
                 raise exception.IncompatibleLayerError(
                     "Categorical Cross Entropy loss should be preceded by " +
                     "Softmax activation function."
                 )
         if self.layers[-1].activation and self.layers[-1].activation.name == "softmax":
-            if self.loss.name != "categorical_cross_entropy":
+            if self.loss_fn.name != "categorical_cross_entropy":
                 raise exception.IncompatibleLayerError(
                     "Softmax should be used together with Categorical " +
                     "Cross Entropy loss."
