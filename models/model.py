@@ -1,6 +1,7 @@
 from losses import loss
 from exceptions import exception
 from layers.input import Input
+import numpy as np
 
 
 class Model:
@@ -27,30 +28,36 @@ class Model:
         self.validate()
 
     def predict(self, input_data):
-        n_samples = len(input_data)
-        result = []
+        n_examples = len(input_data)
+        result = np.zeros(n_examples)
 
-        for i in range(n_samples):
-            self.inputs.forward(input_data[i])
+        for i in range(n_examples):
+            self.inputs.forward(input_data[i: i + 1])
             for layer in self.layers:
                 layer.forward(layer.previous_layer.output)
-            result.append(self.outputs.output)
+            result[i] = self.outputs.output
 
         return result
 
-    def fit(self, x_train, y_train, epochs, learning_rate, print_loss=True):
+    def fit(self, x_train,
+            y_train, epochs,
+            learning_rate,
+            print_loss=True,
+            batch_size=1):
         """Train the model."""
-        n_samples = len(x_train)
+        n_batches = len(x_train) // batch_size
 
-        for i in range(epochs):
+        for epoch in range(epochs):
             self.err = 0
-            for j in range(n_samples):
-                self.forward(x_train[j])
-                self.backward(y_train[j])
+            for batch in range(n_batches):
+                X_batch = x_train[batch * batch_size: (batch + 1) * batch_size]
+                y_batch = y_train[batch * batch_size: (batch + 1) * batch_size]
+                self.forward(X_batch)
+                self.backward(y_batch)
                 self.update(learning_rate)
-            self.err /= n_samples
+            self.err /= n_batches
             if print_loss:
-                print(f"Epoch: {i + 1}/{epochs}    error={round(self.err, 7)}")
+                print(f"Epoch: {epoch + 1}/{epochs}    error={round(self.err, 7)}")
         return self.err
 
     def forward(self, x):
@@ -77,7 +84,7 @@ class Model:
                     "Categorical Cross Entropy loss should be preceded by " +
                     "Softmax activation function."
                 )
-        if self.layers[-1].activation.name == "softmax":
+        if self.layers[-1].activation and self.layers[-1].activation.name == "softmax":
             if self.loss.name != "categorical_cross_entropy":
                 raise exception.IncompatibleLayerError(
                     "Softmax should be used together with Categorical " +
