@@ -19,7 +19,10 @@ class Dense(Layer):
 
     def __call__(self, previous_layer):
         self.previous_layer = previous_layer
-        self.input_size = previous_layer.output_size
+        if (isinstance(previous_layer.output_size, int)):
+            self.input_size = previous_layer.output_size
+        else:
+            self.input_size = np.prod(list(previous_layer.output_size))
         self.create_weights()
         return self
 

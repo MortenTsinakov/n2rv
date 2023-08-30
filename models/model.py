@@ -1,5 +1,6 @@
 from losses import loss
 from exceptions import exception
+from layers.input import Input
 
 
 class Model:
@@ -17,7 +18,8 @@ class Model:
         self.layers = []
         while layers:
             current = layers.pop(0)
-            self.layers.append(current)
+            if not isinstance(current, Input):
+                self.layers.append(current)
             if current.previous_layer and\
                current.previous_layer not in layers:
                 layers.append(current.previous_layer)
@@ -30,9 +32,9 @@ class Model:
 
         for i in range(n_samples):
             self.inputs.forward(input_data[i])
-            for layer in self.layers[1:]:
+            for layer in self.layers:
                 layer.forward(layer.previous_layer.output)
-            result.append(self.layers[-1].output)
+            result.append(self.outputs.output)
 
         return result
 
@@ -53,12 +55,11 @@ class Model:
 
     def forward(self, x):
         self.inputs.forward(x)
-        for layer in self.layers[1:]:
+        for layer in self.layers:
             layer.forward(layer.previous_layer.output)
 
     def backward(self, x):
-        # Calculate loss
-        output = self.layers[-1].output
+        output = self.outputs.output
         self.err += self.loss.forward(x, output)
         error = self.loss.backward(x, output)
         # Backward pass
@@ -70,12 +71,6 @@ class Model:
             layer.update(learning_rate)
 
     def validate(self):
-        # if self.loss.name == "categorical_cross_entropy":
-        #     if self.outputs.activation.name != "softmax":
-        #         raise exception.IncompatibleLayerError(
-        #             "Categorical Cross Entropy loss function should be " +
-        #             "preceded by Softmax activation function."
-        #         )
         if self.loss.name == "categorical_cross_entropy":
             if self.layers[-1].activation.name != "softmax":
                 raise exception.IncompatibleLayerError(
@@ -92,4 +87,9 @@ class Model:
             raise exception.IncompatibleLayerError(
                 "Softmax should be used only as the activation function " +
                 "for the last layer."
+            )
+        if not isinstance(self.inputs, Input):
+            raise exception.IncompatibleLayerError(
+                "Wrong layer type: use Input layer as the first layer of " +
+                "your model."
             )
