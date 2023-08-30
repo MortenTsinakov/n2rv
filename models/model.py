@@ -56,7 +56,8 @@ class Model:
                 self.update(learning_rate)
             self.loss /= n_batches
             if print_loss:
-                print(f"Epoch: {epoch + 1}/{epochs}    error={round(self.loss, 7)}")
+                print(f"Epoch: {epoch + 1}/{epochs}\t" +
+                      f"error={round(self.loss, 7)}")
         return self.loss
 
     def forward(self, x):
@@ -83,7 +84,8 @@ class Model:
                     "Categorical Cross Entropy loss should be preceded by " +
                     "Softmax activation function."
                 )
-        if self.layers[-1].activation and self.layers[-1].activation.name == "softmax":
+        if self.layers[-1].activation and\
+           self.layers[-1].activation.name == "softmax":
             if self.loss_fn.name != "categorical_cross_entropy":
                 raise exception.IncompatibleLayerError(
                     "Softmax should be used together with Categorical " +
