@@ -1,6 +1,5 @@
 from layers.layer import Layer
 from activations.activation import Activation
-from exceptions.exception import IncompatibleLayerError
 import numpy as np
 
 
