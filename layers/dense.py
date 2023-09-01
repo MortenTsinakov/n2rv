@@ -1,23 +1,22 @@
 from layers.layer import Layer
 from activations.activation import Activation
+from exceptions.exception import IncompatibleLayerError
 import numpy as np
 
 
 class Dense(Layer):
-    def __init__(self, input_size=None,
+    def __init__(self,
                  output_size=None,
                  activation=None,
-                 name=None) -> None:
-        # super().__init__()
-        self.input_size = input_size
+                 name="Dense") -> None:
+        self.validate_init(output_size, name)
         self.output_size = output_size
         self.activation = Activation(activation)
         self.previous_layer = None
         self.name = name
-        if self.input_size and self.output_size:
-            self.create_weights()
 
     def __call__(self, previous_layer):
+        self.validate_call(previous_layer)
         self.previous_layer = previous_layer
         if (isinstance(previous_layer.output_size, int)):
             self.input_size = previous_layer.output_size
@@ -46,3 +45,19 @@ class Dense(Layer):
     def update(self, learning_rate):
         self.weights -= learning_rate * self.grad_weights
         self.bias -= learning_rate * self.grad_bias
+
+    def validate_init(self, output_size, name):
+        if not isinstance(output_size, int):
+            raise ValueError("Output size for Dense layer has to be an " +
+                             f"integer. Got: {type(output_size)}")
+        if output_size <= 0:
+            raise ValueError("Output size for Dense layer has to be a " +
+                             f"positive integer. Got: {output_size}")
+        if not isinstance(name, str):
+            raise ValueError("Name for Dense layer has to be of string " +
+                             f"type. Got: {type(name)}")
+
+    def validate_call(self, previous_layer):
+        if not isinstance(previous_layer, Layer):
+            raise ValueError("The preceding layer for Dense layer has to " +
+                             f"be of type Layer. Got {type(previous_layer)}")

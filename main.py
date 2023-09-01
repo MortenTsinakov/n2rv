@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 
 
 def create_model():
-    inputs = Input(shape=(2))
+    inputs = Input(shape=(2,))
     x = Dense(output_size=4, activation='tanh')(inputs)
     outputs = Dense(output_size=1, activation='linear')(x)
 
@@ -34,7 +34,6 @@ def train_test_split(X, y, split=0.7):
     return X_train, y_train, X_test, y_test
 
 
-np.random.seed(12)
 X, y = create_dataset(size=100)
 X_train, y_train, X_test, y_test = train_test_split(X, y)
 
@@ -42,9 +41,9 @@ model = create_model()
 model.compile(loss_fn='mse')
 loss = model.fit(X_train,
                  y_train,
-                 epochs=100,
+                 epochs=500,
                  learning_rate=0.1,
-                 batch_size=1,
+                 batch_size=8,
                  print_loss=False)
 
 print(f"Loss: {round(loss, 4)}")
