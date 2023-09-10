@@ -262,7 +262,21 @@ class TestModel(unittest.TestCase):
             pass
 
     def test_model_fit_wrong_y_shape_throws_exception(self):
-        self.fail()
+        inputs = input.Input(shape=(2, ))
+        outputs = dense.Dense(output_size=1, activation='linear')(inputs)
+        model = Model(inputs=inputs, outputs=outputs)
+        model.compile(loss_fn='mse')
+        try:
+            X = np.random.rand(15, 2)
+            y = np.random.rand(15, 2)
+            model.fit(x_train=X,
+                      y_train=y,
+                      epochs=1,
+                      learning_rate=0.1)
+            self.fail("An exception should be thrown if the output layer's " +
+                      "output dimension doesn't match the label dimensions.")
+        except ShapeMismatchError:
+            pass
 
     def test_model_fit_different_length_X_y_throws_exception(self):
         inputs = input.Input(shape=(2, ))
@@ -276,6 +290,8 @@ class TestModel(unittest.TestCase):
                       y_train=y,
                       epochs=1,
                       learning_rate=0.1)
+            self.fail("If the number of examples doesn't fit the number of labesl " +
+                      "an exception should be thrown.")
         except ShapeMismatchError:
             pass
 

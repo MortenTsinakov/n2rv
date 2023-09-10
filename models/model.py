@@ -173,7 +173,12 @@ class Model:
             )
 
     def validate_y_shape(self, y):
-        pass
+        if y.shape[-1] != self.outputs.output_size:
+            raise exception.ShapeMismatchError(
+                "Mismatch between shapes of labels fed into the model and " +
+                f"output layer detected: {y.shape[-1]} != " +
+                f"{self.outputs.output_size}"
+            )
 
     def validate_X_y_same_length(self, X, y):
         if len(X) != len(y):
