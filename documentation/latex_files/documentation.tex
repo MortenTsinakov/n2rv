@@ -9,6 +9,7 @@
 \begin{document}
     \hyperlink{activation_functions}{\textbf{Activation functions}}
     \begin{itemize}
+        \item \hyperlink{linear}{Linear}
         \item \hyperlink{relu}{Relu}
         \item \hyperlink{sigmoid}{Sigmoid}
         \item \hyperlink{softmax}{Softmax}
@@ -18,6 +19,7 @@
     \hyperlink{layers}{\textbf{Layers}}
     \begin{itemize}
         \item \hyperlink{dense_layer}{Dense}
+        \item \hyperlink{input_layer}{lInput}
     \end{itemize}
     \hyperlink{losses}{\textbf{Loss functions}}
     \begin{itemize}
@@ -54,6 +56,33 @@ class Activation(Layer):
         return self.activation_derivative(self.input, output_error)
     \end{python}
     \pagebreak
+
+    \hypertarget{linear}{Linear function} \\
+
+    Linear activation function returns the value itself. It can be 
+    used as a placeholder for an activation function when one isn't 
+    needed. \\
+
+    \begin{align*}
+        f(x) = x
+    \end{align*}
+    \begin{center}
+    \begin{tikzpicture}
+        \begin{axis}[
+            xmin=-3, xmax=3,
+            ymin=-3, ymax=3,
+            xtick distance = 1.0,
+            ytick distance = 1.0,
+            grid = both,
+            minor tick num = 1,
+            major grid style = {lightgray},
+            xlabel = {$x$},
+            ylabel = {$y$},
+        ]
+            \addplot[] {x};
+        \end{axis}
+    \end{tikzpicture}
+    \end{center}
 
     \hypertarget{relu}{\underline{ReLU function}} \\
     
@@ -219,18 +248,14 @@ class Layer:
     The Dense layer has the following functions:
 \begin{python}
 def __init__(self,
-             input_size  = None,
              output_size = None,
              activation  = None,
              name        = None)
 
 # Initializes a Dense layer and defines:
-#       - the number of inputs
 #       - the number of outputs
 #       - the activation function that's going to be used
 #       - the name of the layer
-# If both input_size and output_size are defined then
-# it creates a weight matrix for the layer
 \end{python}
 \begin{python}
 def __call__(self,
@@ -269,7 +294,50 @@ def update(self,
 # The calculated gradients for weights and biases are multiplied
 # by learning rate and subtracted from weight and bias matrices.
 \end{python}
+\pagebreak
+\begin{python}
+def validate_init(self,
+                  output_size,
+                  name)
+# Makes sure that the arguments given on initialization are of 
+# correct type. Also checks that the output size is >0
+\end{python}
+\begin{python}
+def validate_call(self,
+                  previous_layer)
+# Makes sure the previous layer is of the correct type                
+\end{python}
 \clearpage
+\hypertarget{input_layer}{\underline{Input layer}} \\
+
+An Input layer is the very first layer of the network. It's only 
+function is to pass on the input data to the next layer. \\
+
+Input layer has the following functions:
+\begin{python}
+def __init__(self,
+             shape)
+# Shape describes the dimensions of the input data excluding
+# the batch dimension.
+\end{python}
+\begin{python}
+def forward(self,
+            inputs)
+# Forwards the input to the next layer            
+\end{python}
+\begin{python}
+def backward(self,
+             output_error,
+             learning_rate)
+# Returns the output error without change.
+\end{python}
+\begin{python}
+def validate_init(self,
+                  shape)
+# Makes sure that the shape is a tuple and that it consists
+# only of positive integers.                
+\end{python}
+\pagebreak
 
     \hypertarget{losses}{\textbf{Loss functions}} \\
 

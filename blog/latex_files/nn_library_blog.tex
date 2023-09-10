@@ -255,4 +255,20 @@ the loss functions, activation functions and their respective derivative functio
 are correct. The outputs are compared to the outputs of the corresponding functions 
 in Tensorflow. \\
 
+\textbf{Input layer and Linear activation function} \\
+
+I created an Input layer which should always be the first layer of the network. It was 
+worth adding it mainly because it makes the forward and backward functions in the Model 
+class a bit cleaner. Because the first layer behaves differently to all the layers after it, 
+it might also be easier to implement new layers later on because I don't have to think about 
+two different scenarios: layer as the first one in network vs layer mid-network. \\
+
+\textbf{Writing tests for layers} \\
+
+I wrote some more tests testing the initialization of Dense and Input layers. They are testing 
+whether the arguments passed on initialization are of correct type and in the permitted 
+range of values. I also wanted to make sure that some variables cannot be changed after the 
+initalization or can be changed only inside the class but it proved to be more difficult than 
+I thought in Python because of the lack of private variables and methods. At the moment I left 
+it as is.\\ 
 \end{document}

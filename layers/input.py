@@ -4,6 +4,7 @@ from exceptions import exception
 
 class Input(Layer):
     def __init__(self, shape) -> None:
+        self.validate_init(shape)
         self.shape = shape
         self.output_size = shape
         self.previous_layer = None
@@ -23,3 +24,14 @@ class Input(Layer):
 
     def update(self, learning_rate):
         pass
+
+    def validate_init(self, shape):
+        if not isinstance(shape, tuple):
+            raise TypeError("Input shape should be of type " +
+                            f"tuple. Got: {type(shape)}")
+        if len(shape) == 0:
+            raise ValueError("Input shape should not be empty.")
+        for element in shape:
+            if element <= 0:
+                raise ValueError("Input shape should consist only " +
+                                 f"of positive integers. Got {shape}")
