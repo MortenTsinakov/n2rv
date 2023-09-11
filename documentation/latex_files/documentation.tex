@@ -27,6 +27,18 @@
         \item \hyperlink{cce}{Categorical Cross-Entropy}
     \end{itemize}
     \hyperlink{models}{\textbf{Models}} \\
+
+    \hyperlink{weight_initialization}{\textbf{Weight initialization}}
+        \begin{itemize}
+        \item \hyperlink{initialization_random_normal}{Random normal}
+        \item \hyperlink{initialization_random_uniform}{Random uniform}
+        \item \hyperlink{initialization_zeros}{Zeros}
+        \item \hyperlink{initialization_ones}{Ones}
+        \item \hyperlink{initialization_xavier_normal}{Xavier normal}
+        \item \hyperlink{initialization_xavier_uniform}{Xavier uniform}
+        \item \hyperlink{initialization_he_normal}{He normal}
+        \item \hyperlink{initialization_he_uniform}{He uniform}
+    \end{itemize}
     \clearpage
 
     \hypertarget{activation_functions}{\textbf{Activation functions}} \\
@@ -503,4 +515,78 @@ Finally, a predict() method can be called to get some predictions:
 predictions = model.predict(x_test)
 \end{python}
     \clearpage
+    
+\hypertarget{weight_initialization}{\textbf{Weight initialization}} \\
+
+Setting the initial values for network's weights before the training begins is called weight 
+initialization. The goal is to set them in such a way that a reasonable variance is maintained throughout 
+the learning process which helps to prevent the gradients from vanishing or exploding during back-propagation. 
+Proper weight initialization also helps to accelerate learning. \\
+
+Weight initialization technique can be defined when creating a layer by passing 
+the techinque's name as $weight\_initializer$ parameter like so:
+\begin{python}
+inputs = Input(shape=(2,))
+x = Dense(output_size=4,
+            activation='tanh',
+            weights_initializer='xavier_uniform')(inputs)
+\end{python}
+
+If $weight\_initializer$ is not specified, the Random normal initialization is used.
+\pagebreak
+
+\hypertarget{initialization_random_normal}{\underline{Random normal}} \\
+
+The weights are initialized by drawing random values from a normal (Gaussian) distribution 
+with a mean of $0$ and standard deviation of $0.05$. \\
+
+It's suitable for layers using ReLU activation functions. \\
+
+To use Random Normal initialization technique, the $weight\_initializer$ parameter when 
+creating a layer should be set either to $"random_normal"$, $None$ or not specified at all:
+\begin{python}
+x = Dense(output_size=4,
+          activation='tanh',
+          weights_initializer='random_normal')
+
+x = Dense(output_size=4,
+          activation='tanh',
+          weights_initializer=None)
+
+x = Dense(output_size=4,
+          activation='tanh')
+\end{python}
+\pagebreak
+
+\hypertarget{initialization_random_uniform}{\underline{Random uniform}} \\
+
+The weights are initialized by drawing random values from a uniform distribution 
+within range $[-0.05, 0.05]$. \\
+
+It's suitable for layers using ReLU activation functions. \\
+
+To use Random Uniform initialization technique, the $weight\_initializer$ parameter 
+when creating a layer should be set to $random\_uniform$:
+\begin{python}
+x = Dense(output_size=4,
+          activation='tanh',
+          weights_initializer='random_uniform')
+\end{python}
+\pagebreak
+
+\hypertarget{initialization_zeros}{\underline{Zeros}} \\
+
+All weights are set to zero.\\
+
+Should be used when initializing biases (not weights). \\
+
+To use Zeros initialization technique, the $bias\_initializer$ parameter 
+when creating a layer should be set to $zeros$:
+\begin{python}
+x = Dense(output_size=4,
+          activation='tanh',
+          bias_initializer='zeros')
+\end{python}
+
+
 \end{document}
