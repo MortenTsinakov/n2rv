@@ -55,12 +55,39 @@ def he_uniform(fan_in, fan_out):
 
 
 def get_weights(fan_in, fan_out, init_technique=None):
+    validate_get_weights_parameters(fan_in, fan_out, init_technique)
+    return init_techniques[init_technique](fan_in, fan_out)
+
+
+def validate_get_weights_parameters(fan_in, fan_out, init_technique):
+    if fan_in is not None and\
+       not isinstance(fan_in, int) and\
+       not isinstance(fan_in, np.integer):
+        raise TypeError(
+            "Fan_in in weight_initialization.get_weights() should be " +
+            f"either None or an integer. Got: {type(fan_in)}."
+        )
+    if not isinstance(fan_out, int) and\
+       not isinstance(fan_out, np.integer):
+        raise TypeError(
+            "Fan_out in weight_initialization.get_weights() should be " +
+            f"an integer. Got: {type(fan_out)}."
+        )
+    if isinstance(fan_in, int) and fan_in <= 0:
+        raise ValueError(
+            "Fan_in in weight_initialization.get_weights() has to be " +
+            f"None or >0. Got fan_in={fan_in}."
+        )
+    if fan_out <= 0:
+        raise ValueError(
+            "Fan_out in weight_initialization.get_weights() has to be " +
+            f">0. Got {fan_out}."
+        )
     if init_technique not in init_techniques:
         raise ValueError(
             "Requested weight initialization techinque " +
             f"doesn not excist: {init_technique}."
         )
-    return init_techniques[init_technique](fan_in, fan_out)
 
 
 init_techniques = {
