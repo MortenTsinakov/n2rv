@@ -7,8 +7,12 @@ import matplotlib.pyplot as plt
 
 def create_model():
     inputs = Input(shape=(2,))
-    x = Dense(output_size=4, activation='tanh')(inputs)
-    outputs = Dense(output_size=1, activation='linear')(x)
+    x = Dense(output_size=4,
+              activation='tanh',
+              weights_initializer='xavier_uniform')(inputs)
+    outputs = Dense(output_size=1,
+                    activation='linear',
+                    weights_initializer='he_uniform')(x)
 
     model = Model(inputs, outputs)
     return model
@@ -34,6 +38,8 @@ def train_test_split(X, y, split=0.7):
     return X_train, y_train, X_test, y_test
 
 
+np.random.seed(70)
+
 X, y = create_dataset(size=100)
 X_train, y_train, X_test, y_test = train_test_split(X, y)
 
@@ -43,10 +49,10 @@ loss = model.fit(X_train,
                  y_train,
                  epochs=500,
                  learning_rate=0.1,
-                 batch_size=8,
+                 batch_size=16,
                  print_loss=False)
 
-print(f"Loss: {round(loss, 4)}")
+print(f"Loss: {round(loss, 8)}")
 
 # test
 out = np.array(model.predict(X_test))

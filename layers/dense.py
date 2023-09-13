@@ -1,5 +1,6 @@
 from layers.layer import Layer
 from activations.activation import Activation
+from weight_initialization import weight_initialization
 import numpy as np
 
 
@@ -7,10 +8,14 @@ class Dense(Layer):
     def __init__(self,
                  output_size=None,
                  activation=None,
+                 weights_initializer=None,
+                 bias_initializer='zeros',
                  name="Dense") -> None:
         self.validate_init(output_size, name)
         self.output_size = output_size
         self.activation = Activation(activation)
+        self.weights_initializer = weights_initializer
+        self.bias_initializer = bias_initializer
         self.previous_layer = None
         self.name = name
 
@@ -25,8 +30,16 @@ class Dense(Layer):
         return self
 
     def create_weights(self):
-        self.weights = np.random.randn(self.input_size, self.output_size)
-        self.bias = np.zeros(self.output_size)
+        self.weights = weight_initialization.get_weights(
+            self.input_size,
+            self.output_size,
+            self.weights_initializer
+        )
+        self.bias = weight_initialization.get_weights(
+            None,
+            self.output_size,
+            self.bias_initializer
+        )
 
     def forward(self, input_data):
         self.input = np.reshape(input_data, (input_data.shape[0], -1))
