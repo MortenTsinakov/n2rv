@@ -260,13 +260,17 @@ class Layer:
     The Dense layer has the following functions:
 \begin{python}
 def __init__(self,
-             output_size = None,
-             activation  = None,
-             name        = None)
+             output_size         = None,
+             activation          = None,
+             weights_initializer = None,
+             bias_initializer    ='zeros',
+             name                = None)
 
 # Initializes a Dense layer and defines:
 #       - the number of outputs
 #       - the activation function that's going to be used
+#       - the initialization technique for the weights
+#       - the initialization technique for the biases
 #       - the name of the layer
 \end{python}
 \begin{python}
@@ -528,8 +532,8 @@ the techinque's name as $weight\_initializer$ parameter like so:
 \begin{python}
 inputs = Input(shape=(2,))
 x = Dense(output_size=4,
-            activation='tanh',
-            weights_initializer='xavier_uniform')(inputs)
+          activation='tanh',
+          weights_initializer='xavier_uniform')(inputs)
 \end{python}
 
 If $weight\_initializer$ is not specified, the Random normal initialization is used.
@@ -542,20 +546,8 @@ with a mean of $0$ and standard deviation of $0.05$. \\
 
 It's suitable for layers using ReLU activation functions. \\
 
-To use Random Normal initialization technique, the $weight\_initializer$ parameter when 
-creating a layer should be set either to $"random_normal"$, $None$ or not specified at all:
-\begin{python}
-x = Dense(output_size=4,
-          activation='tanh',
-          weights_initializer='random_normal')
-
-x = Dense(output_size=4,
-          activation='tanh',
-          weights_initializer=None)
-
-x = Dense(output_size=4,
-          activation='tanh')
-\end{python}
+Value to pass as weight\_initializer: \\
+\textbf{"random\_normal"} or \textbf{None}.
 \pagebreak
 
 \hypertarget{initialization_random_uniform}{\underline{Random uniform}} \\
@@ -565,13 +557,8 @@ within range $[-0.05, 0.05]$. \\
 
 It's suitable for layers using ReLU activation functions. \\
 
-To use Random Uniform initialization technique, the $weight\_initializer$ parameter 
-when creating a layer should be set to $random\_uniform$:
-\begin{python}
-x = Dense(output_size=4,
-          activation='tanh',
-          weights_initializer='random_uniform')
-\end{python}
+Value to pass as weight\_initializer: \\
+\textbf{"random\_uniform"}
 \pagebreak
 
 \hypertarget{initialization_zeros}{\underline{Zeros}} \\
@@ -580,13 +567,72 @@ All weights are set to zero.\\
 
 Should be used when initializing biases (not weights). \\
 
-To use Zeros initialization technique, the $bias\_initializer$ parameter 
-when creating a layer should be set to $zeros$:
-\begin{python}
-x = Dense(output_size=4,
-          activation='tanh',
-          bias_initializer='zeros')
-\end{python}
+Value to pass as weight\_initializer: \\
+\textbf{"zeros"}
+\pagebreak
+
+\hypertarget{initialization_ones}{\underline{Ones}} \\
+
+All weights are set to ones.\\
+
+In certain networks setting weights to 1 can help establish initial connections that 
+pass information unchanged through the network. \\
+
+Value to pass as weight\_initializer: \\
+\textbf{"ones"}
+\pagebreak
+    
+\hypertarget{initialization_xavier_normal}{\underline{Xavier normal}} \\
+
+Xavier Normal (also known as Glorot Normal) is a weight initialization technique designed 
+to address the vanishing/exploding gradient problem. The weights are initialized 
+by drawing random values from a normal distribution with a meane of 0 and a standard deviation 
+of $\sqrt{\frac{2}{fan\_in + fan\_out}}$ where 'fan\_in' is the number of input units and 'fan\_out'
+is the number of output units for the layer. \\
+
+It's particularly effective when using Sigmoid or Tanh activation functions. \\
+
+Value to pass as weight\_initializer: \\
+\textbf{"xavier\_normal"}
+\pagebreak
+
+\hypertarget{initialization_xavier_uniform}{\underline{Xavier uniform}} \\
+
+Xavier Uniform is a weight initialization technique designed to adress vanishing/exploding 
+gradient problem. Weights are initialized by drawing random values from uniform distribution 
+within range $\left[-\sqrt{\frac{6}{fan\_in + fan\_out}}, \sqrt{\frac{6}{fan\_in + fan\_out}}\right]$,
+where 'fan\_in' is the number of input units and 'fan\_out' the number of output units for the layer. \\
+
+Suitable for layers using Sigmoid and Tanh activation functions. \\
+
+Value to pass as weight\_initializer: \\
+\textbf{"xavier\_uniform"}
+\pagebreak
+
+\hypertarget{initialization_he_normal}{\underline{He normal}} \\
+
+He Normal is a weight initialization technique that draws random values 
+from normal distribution with a mean of 0 and a standard deviation of 
+$\sqrt{\frac{2}{fan\_in}}$ to initialize weights. 'Fan\_in' is the number 
+of input units for the layer. \\
+
+Designed to work with layers using ReLU activation function. \\
+
+Value to pass as weight\_initializer: \\
+\textbf{"he\_normal"}
+\pagebreak
+
+\hypertarget{initialization_he_uniform}{\underline{He uniform}} \\
+
+He Uniform is a weight initialization technique that draws random values 
+from uniform distribution in range $\left[ -\sqrt{\frac{6}{fan\_in}}, \sqrt{\frac{6}{fan\_in}} \right]$ 
+to initialize the weights. 'Fan\_in' is the number of input units for the layer. \\
+
+Designed to work with layers using ReLU activation function. \\
+
+Value to pass as weight\_initializer: \\
+\textbf{"he\_uniform"}
+\pagebreak
 
 
 \end{document}

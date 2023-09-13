@@ -270,5 +270,33 @@ whether the arguments passed on initialization are of correct type and in the pe
 range of values. I also wanted to make sure that some variables cannot be changed after the 
 initalization or can be changed only inside the class but it proved to be more difficult than 
 I thought in Python because of the lack of private variables and methods. At the moment I left 
-it as is.\\ 
+it as is.\\
+
+\textbf{Adding first weight initialization techniques} \\
+
+I added the following options for initializing weights:
+\begin{itemize}
+    \item Random normal
+    \item Random uniform
+    \item Zeros
+    \item Ones 
+    \item Xavier normal 
+    \item Xavier uniform 
+    \item He normal 
+    \item He uniform
+\end{itemize}
+
+Actually Random normal technique was used before to initialize weights and Zeros was used 
+to intialize biases, so those two are not new. The others are. \\
+
+I used the function $0.3x_{1}^{2} + 0.2x_{2} + 0.5$ to create a dataset and trained a network to 
+try to learn this function. It's not a very good (or fair) test by any means, but I wanted some confirmation 
+that using those new initialization techniques could result in a better performance. And I got it, because 
+when using two layers - one with either Sigmoid or Tanh activation function and another with Linear 
+activation function - and switching between different initialization techniques then one of the Xavier 
+techniques won almost every time. \\
+
+Like I said, this test isn't very fair but it's good to see that there are some new options and they might 
+actually help in making the model better depending on the task \\
+
 \end{document}
