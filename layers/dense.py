@@ -36,7 +36,7 @@ class Dense(Layer):
             self.weights_initializer
         )
         self.bias = weight_initialization.get_weights(
-            None,
+            1,
             self.output_size,
             self.bias_initializer
         )
