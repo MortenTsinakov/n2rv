@@ -224,5 +224,5 @@ class Model:
     def validate_optimizer(self):
         if not isinstance(self.optimizer, Optimizer):
             raise TypeError(
-                "Optimizer has to be of type Optimizer."
+                f"Optimizer has to be of type Optimizer. Got: {type(self.optimizer)}"
             )
