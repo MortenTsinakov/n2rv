@@ -8,8 +8,9 @@ class Input(Layer):
         self.shape = shape
         self.output_size = shape
         self.previous_layer = None
+        self.trainable = False
 
-    def __call__(self, *args, **kwargs):
+    def __call__(self):
         raise exception.IncompatibleLayerError(
             "Input layer can't be used mid-model. Use it only " +
             "as the first layer in your model."
@@ -19,10 +20,10 @@ class Input(Layer):
         self.output = inputs
         return self.output
 
-    def backward(self, output_error, learning_rate):
+    def backward(self, output_error):
         return output_error
 
-    def update(self, learning_rate):
+    def update(self):
         pass
 
     def validate_init(self, shape):

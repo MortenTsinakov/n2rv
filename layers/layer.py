@@ -3,11 +3,11 @@ class Layer:
         self.input = None
         self.output = None
 
-    def forward(self, input):
+    def forward(self):
         raise NotImplementedError
 
-    def backward(self, output_error, learning_rate):
+    def backward(self):
         raise NotImplementedError
 
-    def update(self, learning_rate):
+    def update(self):
         raise NotImplementedError
