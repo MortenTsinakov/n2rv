@@ -1,13 +1,17 @@
+"""Main - build a model, train it, test it."""
+
+
 import numpy as np
+import matplotlib.pyplot as plt
 from models.model import Model
 from layers.dense import Dense
 from layers.input import Input
 from optimizers.sgd import SGD
-import matplotlib.pyplot as plt
 
 
 def create_model():
-    inputs = Input(shape=(2,))
+    """Define the layers of the model."""
+    inputs = Input(shape=(2, ))
     x = Dense(output_size=4,
               activation='tanh',
               weights_initializer='xavier_uniform')(inputs)
@@ -15,27 +19,28 @@ def create_model():
                     activation='linear',
                     weights_initializer='he_uniform')(x)
 
-    model = Model(inputs, outputs)
-    return model
+    return Model(inputs, outputs)
 
 
 def create_dataset(size=100):
+    """Create a dataset using for a function that the model should learn."""
     def function(x1, x2):
         return 0.3 * (x1 ** 2) + 0.2 * x2 + 0.5
 
-    X = np.random.randn(size, 2)
-    y = np.array([[function(*x)] for x in X])
+    features = np.random.randn(size, 2)
+    labels = np.array([[function(*x)] for x in features])
 
-    return X, y
+    return features, labels
 
 
 def train_test_split(X, y, split=0.7):
+    """Split the dataset into training and testing sets."""
     n = int(len(X) * split)
-    X_train = X[:n]
-    y_train = y[:n]
-    X_test = X[n:]
-    y_test = y[n:]
-    return X_train, y_train, X_test, y_test
+    features_train = X[:n]
+    labels_train = y[:n]
+    features_test = X[n:]
+    labels_test = y[n:]
+    return features_train, labels_train, features_test, labels_test
 
 
 # np.random.seed(70)

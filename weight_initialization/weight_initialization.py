@@ -1,7 +1,11 @@
+"""All available weight initialization techniques."""
+
+
 import numpy as np
 
 
-def random_normal(fan_in, fan_out):
+def random_normal(fan_in: int, fan_out: int) -> np.ndarray:
+    """Raturn matrix of random values drawn from normal distribution."""
     mu = 0.0
     sigma = 0.05
     return np.random.normal(loc=mu,
@@ -9,22 +13,27 @@ def random_normal(fan_in, fan_out):
                             size=(fan_in, fan_out) if fan_in else (fan_out))
 
 
-def random_uniform(fan_in, fan_out):
+def random_uniform(fan_in: int, fan_out: int) -> np.ndarray:
+    """Return matrix of random values drawn from uniform distribution."""
     limit = 0.05
     return np.random.uniform(low=-limit,
                              high=limit,
                              size=(fan_in, fan_out) if fan_in else (fan_out))
 
 
-def zeros(fan_in, fan_out):
+def zeros(fan_in: int, fan_out: int) -> np.ndarray:
+    """Return matrix of zeros of size (fan_in, fan_out)."""
     return np.zeros((fan_in, fan_out) if fan_in else (fan_out))
 
 
-def ones(fan_in, fan_out):
+def ones(fan_in: int, fan_out: int) -> np.ndarray:
+    """Return matrix of ones of size (fan_in, fan_out)."""
     return np.ones((fan_in, fan_out) if fan_in else fan_out)
 
 
-def xavier_normal(fan_in, fan_out):
+def xavier_normal(fan_in: int, fan_out: int) -> np.ndarray:
+    """Return matrix of random values from normal distribution using 
+       Xavier Normal initialization technique."""
     mu = 0.0
     sigma = (2 / (fan_in + fan_out)) ** 0.5
     return np.random.normal(loc=mu,
@@ -32,14 +41,18 @@ def xavier_normal(fan_in, fan_out):
                             size=(fan_in, fan_out) if fan_in else (fan_out))
 
 
-def xavier_uniform(fan_in, fan_out):
+def xavier_uniform(fan_in: int, fan_out: int) -> np.ndarray:
+    """Return matrix of random values from uniform distribution using 
+       Xavier Uniform initialization technique."""
     limit = (6 / (fan_in + fan_out)) ** 0.5
     return np.random.uniform(low=-limit,
                              high=limit,
                              size=(fan_in, fan_out) if fan_in else (fan_out))
 
 
-def he_normal(fan_in, fan_out):
+def he_normal(fan_in: int, fan_out: int) -> np.ndarray:
+    """Return matrix of random values from normal distribution using 
+       He Normal initialization technique."""
     mu = 0.0
     sigma = (2 / fan_in) ** 0.5
     return np.random.normal(loc=mu,
@@ -47,19 +60,25 @@ def he_normal(fan_in, fan_out):
                             size=(fan_in, fan_out) if fan_in else (fan_out))
 
 
-def he_uniform(fan_in, fan_out):
+def he_uniform(fan_in: int, fan_out: int) -> np.ndarray:
+    """Return matrix of random values from uniform distribution using
+       He Uniform initialization technique."""
     limit = (6 / fan_in) ** 0.5
     return np.random.uniform(low=-limit,
                              high=limit,
                              size=(fan_in, fan_out) if fan_in else (fan_out))
 
 
-def get_weights(fan_in, fan_out, init_technique=None):
+def get_weights(fan_in: int, fan_out: int, init_technique: str = None) -> np.ndarray:
+    """Get a matrix of size (fan_in, fan_out) using the technique specified by 
+       init_technique variable."""
     validate_get_weights_parameters(fan_in, fan_out, init_technique)
     return init_techniques[init_technique](fan_in, fan_out)
 
 
 def validate_get_weights_parameters(fan_in, fan_out, init_technique):
+    """Validate the arguments provided when defining the weight initialization technique
+       for a layer."""
     if fan_in is not None and\
        not isinstance(fan_in, int) and\
        not isinstance(fan_in, np.integer):
