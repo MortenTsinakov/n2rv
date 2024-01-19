@@ -18,6 +18,7 @@ class Dense(Layer):
         self.bias_initializer = bias_initializer
         self.previous_layer = None
         self.name = name
+        self.trainable = True
 
     def __call__(self, previous_layer):
         self.validate_call(previous_layer)
@@ -54,9 +55,9 @@ class Dense(Layer):
         self.grad_bias = output_error.sum(axis=0)
         return input_error
 
-    def update(self, learning_rate):
-        self.weights -= learning_rate * self.grad_weights
-        self.bias -= learning_rate * self.grad_bias
+    def update(self, weights_change, bias_change):
+        self.weights -= weights_change
+        self.bias -= bias_change
 
     def validate_init(self, output_size, name):
         if not isinstance(output_size, int):

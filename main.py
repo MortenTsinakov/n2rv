@@ -2,6 +2,7 @@ import numpy as np
 from models.model import Model
 from layers.dense import Dense
 from layers.input import Input
+from optimizers.sgd import SGD
 import matplotlib.pyplot as plt
 
 
@@ -20,7 +21,6 @@ def create_model():
 
 def create_dataset(size=100):
     def function(x1, x2):
-        # return 0.3 * (x1 ** 2) + 0.5 * x2 + 0.1
         return 0.3 * (x1 ** 2) + 0.2 * x2 + 0.5
 
     X = np.random.randn(size, 2)
@@ -38,17 +38,16 @@ def train_test_split(X, y, split=0.7):
     return X_train, y_train, X_test, y_test
 
 
-np.random.seed(70)
+# np.random.seed(70)
 
 X, y = create_dataset(size=100)
 X_train, y_train, X_test, y_test = train_test_split(X, y)
 
 model = create_model()
-model.compile(loss_fn='mse')
+model.compile(loss_fn='mse', optimizer=SGD(learning_rate=0.1))
 loss = model.fit(X_train,
                  y_train,
                  epochs=500,
-                 learning_rate=0.1,
                  batch_size=16,
                  print_loss=False)
 

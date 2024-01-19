@@ -2,6 +2,7 @@ from losses import loss
 from exceptions import exception
 from layers.input import Input
 import numpy as np
+from optimizers.optimizer import Optimizer
 
 
 class Model:
@@ -10,10 +11,11 @@ class Model:
         self.inputs = inputs
         self.outputs = outputs
         self.loss_fn = None
+        self.optimizer = None
 
-    def compile(self, loss_fn) -> None:
-        # Add loss function
+    def compile(self, loss_fn, optimizer) -> None:
         self.loss_fn = loss.Loss(loss_fn)
+        self.optimizer = optimizer
         # Create a layer graph
         layers = [self.outputs]
         self.layers = []
@@ -44,14 +46,12 @@ class Model:
             x_train,
             y_train,
             epochs,
-            learning_rate,
             print_loss=True,
             batch_size=1):
         """Train the model."""
         self.validate_on_fit(x_train,
                              y_train,
                              epochs,
-                             learning_rate,
                              print_loss,
                              batch_size)
         n_batches = len(x_train) // batch_size
@@ -63,7 +63,7 @@ class Model:
                 y_batch = y_train[batch * batch_size: (batch + 1) * batch_size]
                 self.forward(X_batch)
                 self.backward(y_batch)
-                self.update(learning_rate)
+                self.update()
             self.loss /= n_batches
             if print_loss:
                 print(f"Epoch: {epoch + 1}/{epochs}\t" +
@@ -83,9 +83,8 @@ class Model:
         for layer in reversed(self.layers):
             derivative = layer.backward(derivative)
 
-    def update(self, learning_rate):
-        for layer in self.layers:
-            layer.update(learning_rate)
+    def update(self):
+        self.optimizer.update(self.layers)
 
     # VALIDATION FUNCTIONS
 
@@ -93,6 +92,7 @@ class Model:
         self.validate_correct_inputs_and_outputs(inputs, outputs)
 
     def validate_on_compile(self):
+        self.validate_optimizer()
         self.validate_softmax_and_cce_are_used_together()
         self.validate_path_between_inputs_and_outputs()
 
@@ -104,7 +104,6 @@ class Model:
                         x_train,
                         y_train,
                         epochs,
-                        learning_rate,
                         print_loss,
                         batch_size):
         self.validate_input_data_type(x_train)
@@ -113,7 +112,6 @@ class Model:
         self.validate_y_shape(y_train)
         self.validate_X_y_same_length(x_train, y_train)
         self.validate_correct_epochs_arg(epochs)
-        self.validata_correct_lr_arg(learning_rate)
         self.validate_correct_print_loss_arg(print_loss)
         self.validate_correct_batch_size_arg(batch_size, x_train)
 
@@ -199,17 +197,6 @@ class Model:
                 f"Got {epochs}"
             )
 
-    def validata_correct_lr_arg(self, learning_rate):
-        if type(learning_rate) != float:
-            raise TypeError(
-                "Learning rate argument in Model.fit() " +
-                f"should be a float. Got: {type(learning_rate)}")
-        if learning_rate <= 0:
-            raise ValueError(
-                "Learning rate argument in Model.fit() " +
-                f"should be >0. Got: {learning_rate}"
-            )
-
     def validate_correct_print_loss_arg(self, print_loss):
         if type(print_loss) != bool:
             raise TypeError(
@@ -232,4 +219,10 @@ class Model:
             raise ValueError(
                 "Batch size argument in Model.fit() should be " +
                 f"<len(x_train). Got: {batch_size}"
+            )
+        
+    def validate_optimizer(self):
+        if not isinstance(self.optimizer, Optimizer):
+            raise TypeError(
+                "Optimizer has to be of type Optimizer."
             )
