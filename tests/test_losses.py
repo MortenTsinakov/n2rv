@@ -1,3 +1,6 @@
+"""Tests for loss functions."""
+
+
 import unittest
 import os
 import sys
@@ -26,7 +29,9 @@ np.random.seed(0)
 
 
 class TestLosses(unittest.TestCase):
+    """Tests for loss functions."""
     def test_mse(self):
+        """Test - Compare Mean Square Error loss function to Tensorflow MSE function."""
         y_true = np.random.rand(10)
         y_pred = np.random.rand(10)
 
@@ -35,7 +40,8 @@ class TestLosses(unittest.TestCase):
 
         np.testing.assert_almost_equal(custom_mse, tf_mse, 1e-5)
 
-    def test_categorical_cross_entropy(self):
+    def test_softmax_categorical_cross_entropy(self):
+        """Test - Compare Softmax + Catgorical Cross-Entropy to Tensorflow SM + CCE."""
         y_pred = activation_functions.softmax_with_categorical_cross_entropy(np.random.rand(5))
         y_true = np.array([0, 0, 1, 0, 0])
 
@@ -45,6 +51,7 @@ class TestLosses(unittest.TestCase):
         np.testing.assert_allclose(custom_cce, tf_cce, 1e-5)
 
     def test_mse_derivatives(self):
+        """Test - Compare Mean Square Error function derivatives to Tensorflow MSE derivatives."""
         y_true = np.random.rand(25)
         y_pred = np.random.rand(25)
 
@@ -62,6 +69,10 @@ class TestLosses(unittest.TestCase):
         np.testing.assert_allclose(custom_grads, tf_grads, 1e-5)
 
     def test_softmax_categorical_cross_entropy_derivatives(self):
+        """
+        Test - Compare Softmax + Categorical Cross-Entropy derivatives to Tensorflow 
+        SM+CCE derivatives.
+        """
         logits = np.random.rand(5)
         y_true = np.array([0, 0, 1, 0, 0])
 
@@ -79,6 +90,7 @@ class TestLosses(unittest.TestCase):
         np.testing.assert_allclose(custom_grads, tf_grads, 1e-5)
 
     def test_get_loss_correct_function_name(self):
+        """Test - Requesting a loss function with correct name doesn't throw an exception."""
         try:
             loss_functions.get_loss('mse')
         except ValueError:
@@ -91,6 +103,7 @@ class TestLosses(unittest.TestCase):
                       " a ValueError with argument: categorical cross entropy")
 
     def test_get_function_incorrect_function_name(self):
+        """Test - Requesting a loss function with incorrect name throws an exception."""
         try:
             loss_functions.get_loss('relu')
             self.fail("loss_functions.get_loss() should not allow" +
