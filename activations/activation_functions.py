@@ -19,7 +19,8 @@ def relu(x: np.ndarray) -> np.ndarray:
 
 def relu_derivative(x: np.ndarray, output_error: np.ndarray) -> np.ndarray:
     """Derivative of ReLU function."""
-    return ((x >= 0).view('i1')) * output_error
+    return np.where(x >= 0, 1, 0).astype(np.int8) * output_error
+    # return ((x >= 0).view('i1')) * output_error
 
 
 def sigmoid(x: np.ndarray):
