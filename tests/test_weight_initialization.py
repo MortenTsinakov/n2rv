@@ -1,3 +1,6 @@
+"""Tests for weight initialization."""
+
+
 import unittest
 import os
 import sys
@@ -20,13 +23,16 @@ np.random.seed(0)
 
 
 class TestWeightInitialization(unittest.TestCase):
+    """Tests for weight initialization."""
     def test_get_function_fan_in_none_returns_fan_out_sized_vector(self):
+        """Test - Requesting weights with fan_in = None returns a vector of size fan_out."""
         fan_in = None
         fan_out = 4
         weights = w_i.get_weights(fan_in, fan_out)
         self.assertEqual(weights.shape, (fan_out, ))
 
     def test_get_function_fan_out_none_raises_exception(self):
+        """Test - Requesting weights with fan_out = None throws an exception."""
         fan_in = 4
         fan_out = None
         try:
@@ -39,6 +45,7 @@ class TestWeightInitialization(unittest.TestCase):
             pass
 
     def test_get_function_technique_does_not_excist_throws_an_exception(self):
+        """Test - Requesting weights with non-excisting technique throws an exception."""
         fan_in = 4
         fan_out = 2
         technique = "non_excisting_technique"
@@ -52,6 +59,7 @@ class TestWeightInitialization(unittest.TestCase):
             pass
 
     def test_get_function_fan_in_non_positive_integer_throws_exception(self):
+        """Test - Requesting weights with fan_in <= 0 throws an exception."""
         fail_text = "If fan_in is a non-positive integer when calling " +\
                     "weight_initialization.get_weights(), an exception " +\
                     "should be thrown."
@@ -68,6 +76,7 @@ class TestWeightInitialization(unittest.TestCase):
             pass
 
     def test_get_function_fan_out_non_positive_integer_throws_exception(self):
+        """Test - Requesting weights with fan_out <= 0 throws an exception."""
         fail_text = "If fan_out is a non-positive integer when calling " +\
                     "weight_initialization.get_weights(), an exception " +\
                     "should be thrown."
@@ -84,6 +93,7 @@ class TestWeightInitialization(unittest.TestCase):
             pass
 
     def test_get_function_fan_out_non_integer_throws_exception(self):
+        """Test - Requestin weights with fan_out of non-integer type throws an exception."""
         fail_text = "If fan_out is not an integer when calling " +\
                     "weight_initialization.get_weights() then " +\
                     "an exception should be thrown."
@@ -100,6 +110,7 @@ class TestWeightInitialization(unittest.TestCase):
             pass
 
     def test_get_function_fan_in_non_integer_throws_exception(self):
+        """Test - Requesting weights with fan_in of non-integer type throws an exception."""
         fail_text = "If fan_in is not an integer or None when calling " +\
                     "weight_initialization.get_weights() then " +\
                     "an exception should be thrown."

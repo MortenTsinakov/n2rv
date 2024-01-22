@@ -1,3 +1,6 @@
+"""Tests for activations functions."""
+
+
 import unittest
 import os
 import sys
@@ -23,8 +26,10 @@ from activations import activation_functions
 np.random.seed(0)
 
 
-class TestLosses(unittest.TestCase):
+class TestActivations(unittest.TestCase):
+    """Tests for activation functions."""
     def test_tanh(self):
+        """Test - Compare Tanh function to Tensorflow Tanh function."""
         x = np.random.randn(10)
 
         tf_tanh = tf.tanh(x).numpy()
@@ -33,6 +38,7 @@ class TestLosses(unittest.TestCase):
         np.testing.assert_allclose(custom_tanh, tf_tanh, 1e-5)
 
     def test_relu(self):
+        """Test - Comapare ReLU function to Tensorflow ReLU function"""
         x = np.random.randn(10)
 
         tf_relu = tf.nn.relu(x).numpy()
@@ -41,6 +47,7 @@ class TestLosses(unittest.TestCase):
         np.testing.assert_allclose(custom_relu, tf_relu, 1e-5)
 
     def test_sigmoid(self):
+        """Test - Compare Sigmoid function to Tensorflow Sigmoid function."""
         x = np.random.randn(10)
 
         tf_sigmoid = tf.sigmoid(x).numpy()
@@ -49,6 +56,7 @@ class TestLosses(unittest.TestCase):
         np.testing.assert_allclose(custom_sigmoid, tf_sigmoid, 1e-5)
 
     def test_tanh_gradients(self):
+        """Test - Compare Tanh derivatives to Tensorflow Tanh derivatives."""
         x = np.random.randn(10)
 
         tf_x = tf.constant(x, dtype=tf.float32)
@@ -63,6 +71,7 @@ class TestLosses(unittest.TestCase):
         np.testing.assert_allclose(custom_grads, tf_grads, 1e-5)
 
     def test_relu_gradients(self):
+        """Test - Compare ReLU derivatives to Tensorflow ReLU derivatives."""
         x = np.random.randn(10)
 
         tf_x = tf.constant(x, dtype=tf.float32)
@@ -77,6 +86,7 @@ class TestLosses(unittest.TestCase):
         np.testing.assert_allclose(custom_grads, tf_grads, 1e-5)
 
     def test_sigmoid_gradients(self):
+        """Test - Compare Sigmoid derivatives to Tensorflow Sigmoid derivatives."""
         x = np.random.randn(10)
 
         tf_x = tf.constant(x, dtype=tf.float32)
@@ -90,6 +100,7 @@ class TestLosses(unittest.TestCase):
         np.testing.assert_allclose(custom_grads, tf_grads, 1e-5)
 
     def test_get_function_correct_function_name(self):
+        """Test - Valid activation names should not throw an exception."""
         try:
             activation_functions.get_function('tanh')
         except ValueError:
@@ -112,6 +123,7 @@ class TestLosses(unittest.TestCase):
                       " a ValueError with argument: softmax")
 
     def test_get_function_incorrect_function_name(self):
+        """Test - Invalid activation names should thrown an exception."""
         try:
             activation_functions.get_function('mse')
             self.fail("activation_function.get_function() should not allow" +
