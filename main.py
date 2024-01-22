@@ -53,7 +53,7 @@ def train_test_split(X, y, split=0.7):
 
 np.random.seed(1)
 
-X, y = create_dataset(size=100)
+X, y = create_dataset(size=200)
 X_train, y_train, X_test, y_test = train_test_split(X, y)
 
 model = create_model()
