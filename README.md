@@ -1,2 +1,1 @@
-The idea behind this project is to build a neural network library from scratch just to teach myself about NN-s.
-I will keep a "blog" in a pdf document.
+I created this project just for myself to learn about Neural Networks and what happens "under the hood".
