@@ -63,6 +63,8 @@ class Model:
                              print_loss,
                              batch_size)
         n_batches = len(x_train) // batch_size
+        if len(x_train) % batch_size != 0:
+            n_batches += 1
 
         for epoch in range(epochs):
             self.loss = 0
