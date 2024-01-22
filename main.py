@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 from models.model import Model
 from layers.dense import Dense
 from layers.input import Input
+from optimizers.momentum import Momentum
 from optimizers.sgd import SGD
 
 
@@ -43,17 +44,17 @@ def train_test_split(X, y, split=0.7):
     return features_train, labels_train, features_test, labels_test
 
 
-# np.random.seed(70)
+np.random.seed(42)
 
 X, y = create_dataset(size=100)
 X_train, y_train, X_test, y_test = train_test_split(X, y)
 
 model = create_model()
-model.compile(loss_fn='mse', optimizer=SGD(learning_rate=0.1))
+model.compile(loss_fn='mse', optimizer=Momentum(learning_rate=0.1))
 loss = model.fit(X_train,
                  y_train,
-                 epochs=500,
-                 batch_size=16,
+                 epochs=200,
+                 batch_size=8,
                  print_loss=False)
 
 print(f"Loss: {round(loss, 8)}")
