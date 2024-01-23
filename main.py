@@ -81,7 +81,7 @@ def get_model() -> Model:
     return Model(inputs=inputs, outputs=outputs)
 
 
-data = get_data(random_state=54)
+data = get_data(random_state=80)
 x_train, y_train, x_test, y_test = train_test_split(data)
 
 model = get_model()
@@ -90,7 +90,7 @@ model.compile(loss_fn='categorical_cross_entropy',
 loss = model.fit(x_train=x_train,
                  y_train=y_train,
                  epochs=100,
-                 print_loss=True,
+                 print_loss=False,
                  batch_size=1)
 print(loss)
 
