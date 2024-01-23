@@ -1,86 +1,103 @@
-"""Main - build a model, train it, test it."""
+"""Testing the network with iris dataset."""
 
 
+import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
-import math
 from models.model import Model
-from layers.dense import Dense
 from layers.input import Input
+from layers.dense import Dense
+# from optimizers.sgd import SGD
 from optimizers.momentum import Momentum
-from optimizers.sgd import SGD
 
 
-def create_model():
-    """Define the layers of the model."""
-    inputs = Input(shape=(3, ))
-    x = Dense(output_size=32,
-              activation='relu',
-              weights_initializer='he_normal')(inputs)
-    x = Dense(output_size=16,
-            activation='relu',
-            weights_initializer='he_normal')(x)
+def import_data(filename: str) -> pd.DataFrame:
+    """Import the dataset."""
+    names = [
+        "sepal_length",
+        "sepal_width",
+        "petal_length",
+        "petal_width",
+        "species"
+    ]
+    return pd.read_csv(filename, names=names)
+
+
+def species_to_categorical(dataset: pd.DataFrame) -> None:
+    """Turn the species column from string to integer."""
+    categories = dataset["species"].unique()
+    mapping = {}
+    for idx, cat in enumerate(categories):
+        mapping[cat] = idx
+    dataset["species"] = dataset["species"].map(mapping).astype(int)
+
+
+def normalize_column(column):
+    """Normalize column using min max normalization."""
+    min_val = column.min()
+    max_val = column.max()
+    return (column - min_val) / (max_val - min_val)
+
+
+def get_data(random_state: int = 42):
+    """
+    Import iris data, change 'species' values to numerical categories,
+    normalize and shuffle the data.
+    """
+    dataset = import_data('datasets/iris.data')
+    species_to_categorical(dataset)
+    features = dataset.select_dtypes(include=['float64']).columns
+    dataset[features] = dataset[features].apply(normalize_column)
+    dataset = dataset.sample(frac=1.0, random_state=random_state)
+    return dataset
+
+
+def train_test_split(dataset: pd.DataFrame, split: float = 0.7) -> tuple:
+    """Split the data into training and testing set."""
+    n_train = int(len(dataset) * split)
+    # Get all rows until n_train of column 'species' and turn them into one-hot encoded vectors
+    y_tr = dataset['species'].iloc[:n_train]
+    y_tr = pd.get_dummies(y_tr, ['species']).to_numpy()
+    # Get all rows from n_train of column 'species' and turn them into one-hot encoded vectors
+    y_te = dataset['species'].iloc[n_train:]
+    y_te = pd.get_dummies(y_te, ['species']).to_numpy()
+    x_tr = dataset.drop(columns=['species']).iloc[:n_train].to_numpy()
+    x_te = dataset.drop(columns=['species']).iloc[n_train:].to_numpy()
+    return x_tr, y_tr, x_te, y_te
+
+
+def get_model() -> Model:
+    """Build the model."""
+    inputs = Input(shape=(4, ))
     x = Dense(output_size=8,
-            activation='relu',
-            weights_initializer='he_normal')(x)
+              activation='relu',
+              weights_initializer='he_normal',)(inputs)
     x = Dense(output_size=4,
-            activation='relu',
-            weights_initializer='he_normal')(x)
-    outputs = Dense(output_size=1,
-                    activation='relu',
-                    weights_initializer='he_normal')(x)
-
-    return Model(inputs, outputs)
-
-
-def create_dataset(size=100):
-    """Create a dataset using for a function that the model should learn."""
-    def function(x1, x2, x3):
-        return abs(math.sin(0.8 * x1 ** 3 + 0.2 * x2 - 0.5 * x3))
-
-    features = np.random.rand(size, 3)
-    labels = np.array([[function(*x)] for x in features])
-
-    return features, labels
+              activation='relu',
+              weights_initializer='he_normal')(x)
+    outputs = Dense(output_size=3,
+                    activation='softmax',
+                    weights_initializer='xavier_normal')(x)
+    
+    return Model(inputs=inputs, outputs=outputs)
 
 
-def train_test_split(X, y, split=0.7):
-    """Split the dataset into training and testing sets."""
-    n = int(len(X) * split)
-    features_train = X[:n]
-    labels_train = y[:n]
-    features_test = X[n:]
-    labels_test = y[n:]
-    return features_train, labels_train, features_test, labels_test
+data = get_data(random_state=54)
+x_train, y_train, x_test, y_test = train_test_split(data)
 
-
-np.random.seed(2)
-
-X, y = create_dataset(size=6000)
-X_train, y_train, X_test, y_test = train_test_split(X, y)
-
-model = create_model()
-model.compile(loss_fn='mse', optimizer=Momentum(learning_rate=0.03, momentum=0.5))
-loss = model.fit(X_train,
-                 y_train,
+model = get_model()
+model.compile(loss_fn='categorical_cross_entropy',
+              optimizer=Momentum(learning_rate=0.01))
+loss = model.fit(x_train=x_train,
+                 y_train=y_train,
                  epochs=100,
-                 batch_size=16,
-                 print_loss=True)
+                 print_loss=False,
+                 batch_size=1)
+print(loss)
 
-print(f"Loss: {round(loss, 8)}")
-
-# test
-out = np.array(model.predict(X_test))
-
-val_loss = 0
-count_correct = 0
-
-for i in range(len(out)):
-    if abs(out[i] - y_test[i][0]) < 0.03:
-        plt.plot([i, i], [out[i], y_test[i][0]], 'ro-')
-        count_correct += 1
-    val_loss += (out[i] - y_test[i][0]) ** 2
-val_loss /= len(out)
-print(f"val loss: {val_loss}")
-print(f"Correct: {count_correct} / {len(out)} -> {round(count_correct / len(out) * 100, 2)}%")
-plt.show()
+preds = model.predict(x_test)
+correct = 0
+for y, pred, in zip(y_test, preds):
+    if np.argmax(y) == np.argmax(pred):
+        correct += 1
+print(f"Result: {correct} / {len(preds)}")
+print(f"{round(correct / len(preds) * 100, 2)}%")
