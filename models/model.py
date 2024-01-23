@@ -40,13 +40,13 @@ class Model:
         """Predict using the trained model."""
         self.validate_on_predict(input_data)
         n_examples = len(input_data)
-        result = np.zeros(n_examples)
+        result = []
 
         for i in range(n_examples):
             self.inputs.forward(input_data[i: i + 1])
             for layer in self.layers:
                 layer.forward(layer.previous_layer.output)
-            result[i] = self.outputs.output
+            result.append(self.outputs.output)
 
         return result
 
