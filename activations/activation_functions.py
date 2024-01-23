@@ -52,7 +52,7 @@ def softmax_with_categorical_cross_entropy(x: np.ndarray) -> np.ndarray:
 
 
 def softmax_with_categorical_cross_entropy_derivative(x: np.ndarray, output_error: np.ndarray) -> np.ndarray:
-    """Softmax activation function (combined with Categorical Cross-Entropy)."""
+    """Softmax activation derivative function (combined with Categorical Cross-Entropy)."""
     return output_error
 
 

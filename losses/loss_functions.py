@@ -19,7 +19,9 @@ def mse_derivative(y_true: np.ndarray,
 def categorical_cross_entropy_with_softmax(y_true: np.ndarray,
                                            y_pred: np.ndarray) -> np.ndarray:
     """Categorical cross entropy loss function."""
-    return -np.sum(y_true * np.log(y_pred))
+    epsilon = 1e-15
+    y_pred = np.clip(y_pred, epsilon, 1 - epsilon)
+    return -np.sum(y_true * np.log(y_pred)) / len(y_true)
 
 
 def categorical_cross_entropy_with_softmax_derivative(y_true: np.ndarray,

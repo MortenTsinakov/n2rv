@@ -6,7 +6,7 @@ import numpy as np
 from models.model import Model
 from layers.input import Input
 from layers.dense import Dense
-# from optimizers.sgd import SGD
+from optimizers.sgd import SGD
 from optimizers.momentum import Momentum
 
 
@@ -86,11 +86,11 @@ x_train, y_train, x_test, y_test = train_test_split(data)
 
 model = get_model()
 model.compile(loss_fn='categorical_cross_entropy',
-              optimizer=Momentum(learning_rate=0.01))
+              optimizer=Momentum())
 loss = model.fit(x_train=x_train,
                  y_train=y_train,
                  epochs=100,
-                 print_loss=False,
+                 print_loss=True,
                  batch_size=1)
 print(loss)
 
