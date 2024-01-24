@@ -69,10 +69,10 @@ def get_model() -> Model:
     """Build the model."""
     inputs = Input(shape=(4, ))
     x = Dense(output_size=8,
-              activation='relu',
+              activation='leaky_relu',
               weights_initializer='he_normal',)(inputs)
     x = Dense(output_size=4,
-              activation='relu',
+              activation='leaky_relu',
               weights_initializer='he_normal')(x)
     outputs = Dense(output_size=3,
                     activation='softmax',
@@ -89,9 +89,9 @@ model.compile(loss_fn='categorical_cross_entropy',
               optimizer=Momentum())
 loss = model.fit(x_train=x_train,
                  y_train=y_train,
-                 epochs=100,
+                 epochs=200,
                  print_loss=True,
-                 batch_size=64)
+                 batch_size=32)
 print(loss)
 
 preds = model.predict(x_test)
