@@ -46,9 +46,9 @@ def linear_derivative(x: np.ndarray, output_error: np.ndarray) -> np.ndarray:
 
 def softmax_with_categorical_cross_entropy(x: np.ndarray) -> np.ndarray:
     """Stable softmax function."""
-    x_shifted = x - np.max(x)
+    x_shifted = x - np.max(x, axis=1, keepdims=True)
     exps = np.exp(x_shifted)
-    return exps / np.sum(exps)
+    return exps / np.sum(exps, axis=1, keepdims=True)
 
 
 def softmax_with_categorical_cross_entropy_derivative(x: np.ndarray, output_error: np.ndarray) -> np.ndarray:

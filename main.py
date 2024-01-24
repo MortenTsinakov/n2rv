@@ -90,8 +90,8 @@ model.compile(loss_fn='categorical_cross_entropy',
 loss = model.fit(x_train=x_train,
                  y_train=y_train,
                  epochs=100,
-                 print_loss=False,
-                 batch_size=1)
+                 print_loss=True,
+                 batch_size=64)
 print(loss)
 
 preds = model.predict(x_test)
