@@ -20,7 +20,16 @@ def relu(x: np.ndarray) -> np.ndarray:
 def relu_derivative(x: np.ndarray, output_error: np.ndarray) -> np.ndarray:
     """Derivative of ReLU function."""
     return np.where(x >= 0, 1, 0).astype(np.int8) * output_error
-    # return ((x >= 0).view('i1')) * output_error
+
+
+def leaky_relu(x: np.ndarray) -> np.ndarray:
+    """Leaky ReLU activation function."""
+    return np.maximum(0.01 * x, x)
+
+
+def leaky_relu_derivative(x: np.ndarray, output_error: np.ndarray) -> np.ndarray:
+    """Derivative of Leaky ReLU function."""
+    return np.where(x >= 0, 1, 0.01) * output_error
 
 
 def sigmoid(x: np.ndarray):
@@ -69,6 +78,7 @@ def get_function(function):
 activation_functions = {
     'tanh': [tanh, tanh_derivative],
     'relu': [relu, relu_derivative],
+    'leaky_relu': [leaky_relu, leaky_relu_derivative],
     'sigmoid': [sigmoid, sigmoid_derivative],
     'linear': [linear, linear_derivative],
     'softmax': [softmax_with_categorical_cross_entropy,
