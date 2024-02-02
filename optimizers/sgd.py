@@ -7,7 +7,8 @@ from layers.layer import Layer
 
 class SGD(Optimizer):
     """SGD class."""
-    def __init__(self, learning_rate: float = 0.01) -> None:
+    def __init__(self,
+                 learning_rate: float = 0.01) -> None:
         self.validate_correct_lr_arg(learning_rate)
         self.learning_rate = learning_rate
 

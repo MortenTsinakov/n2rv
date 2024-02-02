@@ -8,7 +8,8 @@ from layers.input import Input
 from layers.dense import Dense
 # from optimizers.sgd import SGD
 # from optimizers.momentum import Momentum
-from optimizers.rmsprop import RMSProp
+# from optimizers.rmsprop import RMSProp
+from optimizers.adam import Adam
 
 
 def import_data(filename: str) -> pd.DataFrame:
@@ -87,12 +88,12 @@ x_train, y_train, x_test, y_test = train_test_split(data)
 
 model = get_model()
 model.compile(loss_fn='categorical_cross_entropy',
-              optimizer=RMSProp())
+              optimizer=Adam())
 loss = model.fit(x_train=x_train,
                  y_train=y_train,
                  epochs=200,
-                 print_loss=False,
-                 batch_size=16)
+                 print_loss=True,
+                 batch_size=32)
 print(loss)
 
 preds = model.predict(x_test)
