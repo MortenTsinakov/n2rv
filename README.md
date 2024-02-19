@@ -11,6 +11,13 @@ This library serves as a personal learning resource for understanding neural net
 - Various optimization algorithms
 - Various weight initialization techniques
 
+#### Technologies used
+
+- Python 3.10.12
+- Numpy 1.23.5
+- Tensorflow 2.12.0 (used in some tests to compare outputs)
+- Pandas 2.12.0 (used in some examples to manipulate the input data)
+
 #### Installation
 
 Clone the repository like this:
