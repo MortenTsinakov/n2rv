@@ -24,5 +24,5 @@ Please check the documentation for examples demonstrating how to use the library
 
 #### Documentation
 
-Find the documentation for the project on this page:
+Find the documentation for the project on this page: <br>
 https://concise-hawk-551.notion.site/NN-Library-documentation-c63d9d4cd9e941d3983b1018a8f42fc2
