@@ -53,7 +53,7 @@ def get_data(random_state: int = 42):
     Import iris data, change 'species' values to numerical categories,
     normalize and shuffle the data.
     """
-    dataset = import_data('iris.data')
+    dataset = import_data('../datasets/iris.data')
     species_to_categorical(dataset)
     features = dataset.select_dtypes(include=['float64']).columns
     dataset[features] = dataset[features].apply(normalize_column)
@@ -78,10 +78,10 @@ def train_test_split(dataset: pd.DataFrame, split: float = 0.7) -> tuple:
 def get_model() -> Model:
     """Build the model."""
     inputs = Input(shape=(4, ))
-    x = Dense(output_size=8,
+    x = Dense(output_size=32,
               activation='relu',
               weights_initializer='he_normal',)(inputs)
-    x = Dense(output_size=4,
+    x = Dense(output_size=16,
               activation='relu',
               weights_initializer='he_normal')(x)
     outputs = Dense(output_size=3,
