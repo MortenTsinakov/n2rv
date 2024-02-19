@@ -14,9 +14,9 @@ This library serves as a personal learning resource for understanding neural net
 #### Installation
 
 Clone the repository like this:
-´´´
+```
 git clone https://github.com/MortenTsinakov/nn_library_lesson.git
-´´´
+```
 
 #### Usage
 
