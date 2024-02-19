@@ -79,10 +79,10 @@ def get_model() -> Model:
     """Build the model."""
     inputs = Input(shape=(4, ))
     x = Dense(output_size=8,
-              activation='leaky_relu',
+              activation='relu',
               weights_initializer='he_normal',)(inputs)
     x = Dense(output_size=4,
-              activation='leaky_relu',
+              activation='relu',
               weights_initializer='he_normal')(x)
     outputs = Dense(output_size=3,
                     activation='softmax',
