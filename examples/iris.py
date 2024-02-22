@@ -104,12 +104,14 @@ if __name__ == "__main__":
     loss = model.fit(x_train=x_train,
                     y_train=y_train,
                     epochs=200,
-                    print_loss=True,
+                    print_loss=False,
                     batch_size=32)
     print(f"Final loss: {loss}")
 
-    preds = model.predict(x_test)
+    preds = np.array(model.predict(x_test))
     correct = 0
+    print(preds.shape)
+    print(y_test.shape)
     for y, pred, in zip(y_test, preds):
         if np.argmax(y) == np.argmax(pred):
             correct += 1
