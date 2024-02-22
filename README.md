@@ -7,7 +7,7 @@ This library serves as a personal learning resource for understanding neural net
 - Implementation of a feedforward neural network
 - Input layer and Dense layer
 - Various activation functions
-- Mean Squared Error and Categorical Cross-Entropy loss functions
+- Various loss functions
 - Various optimization algorithms
 - Various weight initialization techniques
 
