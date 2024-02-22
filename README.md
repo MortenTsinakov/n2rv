@@ -11,6 +11,8 @@ This library serves as a personal learning resource for understanding neural net
 - Various optimization algorithms
 - Various weight initialization techniques
 
+(check documentation to see the full list of implemented activation functions, loss functions etc.)
+
 #### Technologies used
 
 - Python 3.10.12
