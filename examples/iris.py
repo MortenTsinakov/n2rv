@@ -110,8 +110,6 @@ if __name__ == "__main__":
 
     preds = np.array(model.predict(x_test))
     correct = 0
-    print(preds.shape)
-    print(y_test.shape)
     for y, pred, in zip(y_test, preds):
         if np.argmax(y) == np.argmax(pred):
             correct += 1
