@@ -20,7 +20,7 @@ def categorical_cross_entropy_with_softmax(y_true: np.ndarray,
                                            y_pred: np.ndarray) -> np.ndarray:
     """Categorical Cross Entropy loss function."""
     epsilon = 1e-15
-    return -np.mean(y_true * np.log(y_pred + epsilon))
+    return -np.mean(np.sum(y_true * np.log(y_pred + epsilon), axis=-1))
 
 
 def categorical_cross_entropy_with_softmax_derivative(y_true: np.ndarray,

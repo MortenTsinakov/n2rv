@@ -42,10 +42,10 @@ class TestLosses(unittest.TestCase):
 
     def test_softmax_categorical_cross_entropy(self):
         """Test - Compare Softmax + Catgorical Cross-Entropy to Tensorflow SM + CCE."""
-        y_pred = activation_functions.softmax_with_categorical_cross_entropy(np.random.rand(5))
-        y_true = np.array([0, 0, 1, 0, 0])
+        y_pred = activation_functions.softmax_with_categorical_cross_entropy(np.random.rand(1, 5))
+        y_true = np.array([[0, 0, 1, 0, 0]])
 
-        tf_cce = tf.losses.categorical_crossentropy(y_true, y_pred).numpy()
+        tf_cce = tf.keras.losses.categorical_crossentropy(y_true, y_pred).numpy()
         custom_cce = loss_functions.categorical_cross_entropy_with_softmax(y_true, y_pred)
 
         np.testing.assert_allclose(custom_cce, tf_cce, 1e-5)
@@ -73,7 +73,7 @@ class TestLosses(unittest.TestCase):
         Test - Compare Softmax + Categorical Cross-Entropy derivatives to Tensorflow 
         SM+CCE derivatives.
         """
-        logits = np.random.rand(5)
+        logits = np.random.rand(1, 5)
         y_true = np.array([0, 0, 1, 0, 0])
 
         tf_logits = tf.constant(logits, dtype=tf.float32)
