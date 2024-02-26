@@ -46,9 +46,9 @@ class Model:
             self.inputs.forward(input_data[i: i + 1])
             for layer in self.layers:
                 layer.forward(layer.previous_layer.output)
-            result.append(self.outputs.output)
+            result.append(self.outputs.output.reshape(-1))
 
-        return result
+        return np.array(result)
 
     def fit(self,
             x_train: np.ndarray,

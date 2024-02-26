@@ -65,10 +65,8 @@ print(f"Final loss: {loss}")
 preds = model.predict(x_test)
 correct = 0
 for pred, true in zip(preds, y_test):
-    p = pred[0][0]
-    p = 1 if p > 0.5 else 0
-    t = true[0]
-    if p == t:
+    pred = np.round(pred)
+    if (pred == true):
         correct += 1
 
 print(f"Accuracy: {round(correct / len(y_test) * 100, 2)}%")
