@@ -39,16 +39,12 @@ class Model:
     def predict(self, input_data: np.ndarray) -> np.ndarray:
         """Predict using the trained model."""
         self.validate_on_predict(input_data)
-        n_examples = len(input_data)
-        result = []
 
-        for i in range(n_examples):
-            self.inputs.forward(input_data[i: i + 1])
-            for layer in self.layers:
-                layer.forward(layer.previous_layer.output)
-            result.append(self.outputs.output.reshape(-1))
+        self.inputs.forward(input_data=input_data)
+        for layer in self.layers:
+            layer.forward(layer.previous_layer.output)
 
-        return np.array(result)
+        return self.outputs.output
 
     def fit(self,
             x_train: np.ndarray,
