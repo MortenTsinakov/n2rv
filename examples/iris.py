@@ -108,10 +108,11 @@ if __name__ == "__main__":
                     batch_size=32)
     print(f"Final loss: {loss}")
 
-    preds = np.array(model.predict(x_test))
-    correct = 0
-    for y, pred, in zip(y_test, preds):
-        if np.argmax(y) == np.argmax(pred):
-            correct += 1
-    print(f"Result: {correct} / {len(preds)}")
-    print(f"{round(correct / len(preds) * 100, 2)}%")
+    preds = model.predict(x_test)
+
+    y_hats = np.argmax(preds, axis=1)
+    ys = np.argmax(y_test, axis=1)
+
+    correct = sum([1 for y_hat, y in zip(y_hats, ys) if y_hat == y])
+    print(f"Correct predictions: {correct}/{len(y_test)}")
+    print(f"{round(correct / len(y_test) * 100, 2)}%")
