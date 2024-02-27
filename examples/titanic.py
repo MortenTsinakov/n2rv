@@ -165,10 +165,6 @@ if __name__ == "__main__":
     print(f"Final loss: {loss}")
 
     preds = model.predict(x_test)
-
-    correct = 0
-    for pred, true in zip(preds, y_test):
-        if round(pred[0]) == true[0]:
-            correct += 1
+    correct = sum([1 for p, t in zip(preds, y_test) if round(p[0]) == t[0]])
 
     print(f"Result: {round(correct / len(y_test) * 100, 2)}%")

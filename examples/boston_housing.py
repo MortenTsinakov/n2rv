@@ -45,7 +45,7 @@ def train_test_split(dataset: pd.DataFrame, split: float = 0.8) -> tuple:
     """Split dataset into training and testing set."""
     n_train = int(len(dataset) * split)
     y_tr = dataset["MEDV"].iloc[:n_train].to_numpy().reshape(-1, 1)
-    y_te = dataset["MEDV"].iloc[n_train:].to_numpy()
+    y_te = dataset["MEDV"].iloc[n_train:].to_numpy().reshape(-1, 1)
     x_tr = dataset.drop(columns=["MEDV"]).iloc[:n_train].to_numpy()
     x_te = dataset.drop(columns=["MEDV"]).iloc[n_train:].to_numpy()
     return x_tr, y_tr, x_te, y_te
@@ -110,7 +110,7 @@ def count_errors(pred, true):
     min_error = float('inf')
 
     for p, t in zip(pred, true):
-        diff = abs(p - t)
+        diff = abs(p[0] - t[0])
         if diff > max_error:
             max_error = diff
         if diff < min_error:
@@ -152,9 +152,9 @@ if __name__ == "__main__":
 
     # Scale predictions and actual results back and because they are
     # thouseands in original dataset multiply with 1000
-    preds = np.array(model.predict(x_test)).reshape(-1)
+    preds = model.predict(x_test)
     preds = (preds * (label_max - label_min ) + label_min) * 1000
     y_test = (y_test * (label_max - label_min) + label_min) * 1000
 
     count_errors(preds, y_test)
-    plot_the_comparison(preds, y_test)
+    plot_the_comparison(preds.reshape(-1), y_test.reshape(-1))
