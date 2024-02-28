@@ -25,7 +25,7 @@ This library serves as a personal learning resource for understanding neural net
 
 Clone the repository:
 ```
-git clone https://github.com/MortenTsinakov/nn_library_lesson.git
+git clone https://github.com/MortenTsinakov/n2rv.git
 ```
 
 #### Usage
