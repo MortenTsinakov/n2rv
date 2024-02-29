@@ -1,7 +1,7 @@
 """
 Example of using the library on Titanic dataset.
 
-To run this file, create a dataset directory one directory up from this file and
+To run this file, create a dataset directory (called 'datasets') one directory up from this file and
 add Titanic dataset with the name 'Titanic-Dataset.csv' in that directory.
 
 The Titanic dataset can be downloaded from:

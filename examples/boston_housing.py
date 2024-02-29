@@ -1,7 +1,7 @@
 """
 Example of using the library on Boston housing dataset.
 
-To run this file, create a dataset directory one directory up from this file and
+To run this file, create a dataset directory (called 'datasets') one directory up from this file and
 add Boston housing dataset with the name 'HousingData.csv' in that directory.
 
 The Boston housing dataset can be found here:
