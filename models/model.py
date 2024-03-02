@@ -126,10 +126,10 @@ class Model:
             epochs (int) - total iterations
         """
         metrics_dict = self.metrics.get_metrics(self.loss)
-        text = ""
+        metrics_to_print = []
         for k, v in metrics_dict.items():
-            text += f", {k}: {v}"
-        print(f"Epoch: {epoch}/{epochs} Train - [{text}]")
+            metrics_to_print.append(f"{k}: {v}")
+        print(f"Epoch: {epoch}/{epochs} Train - {metrics_to_print}")
         self.metrics.reset_metrics()
 
     # VALIDATION FUNCTIONS
