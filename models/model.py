@@ -8,6 +8,7 @@ from layers.input import Input
 from layers.layer import Layer
 from optimizers.optimizer import Optimizer
 from metrics.model_metrics import ModelMetrics
+from metrics.metrics import Metrics
 
 
 class Model:
@@ -42,7 +43,7 @@ class Model:
         self.layers.reverse()
         self.validate_on_compile()
 
-    def evaluate(self, x_test: np.ndarray, y_test: np.ndarray) -> None:
+    def evaluate(self, x_test: np.ndarray, y_test: np.ndarray) -> dict[str, Metrics]:
         """
         Print out loss and metrics on test set.
         
@@ -53,9 +54,9 @@ class Model:
         pred = self.predict(x_test)
         loss = self.loss_fn.forward(y_test, pred)
         self.metrics.update_metrics(true=y_test, pred=pred)
-        text = f"Test - [{self.metrics.get_metrics(loss=loss)}]"
+        metric_dict = self.metrics.get_metrics(loss=loss)
         self.metrics.reset_metrics()
-        return text
+        return metric_dict
 
     def predict(self, input_data: np.ndarray) -> np.ndarray:
         """Predict using the trained model."""
@@ -124,7 +125,10 @@ class Model:
             epoch (int) - current iteration
             epochs (int) - total iterations
         """
-        text = self.metrics.get_metrics(self.loss)
+        metrics_dict = self.metrics.get_metrics(self.loss)
+        text = ""
+        for k, v in metrics_dict.items():
+            text += f", {k}: {v}"
         print(f"Epoch: {epoch}/{epochs} Train - [{text}]")
         self.metrics.reset_metrics()
 

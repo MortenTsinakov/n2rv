@@ -23,12 +23,12 @@ class ModelMetrics:
         for metric in self.metrics_list:
             metric.update(true, pred)
 
-    def get_metrics(self, loss: float) -> None:
+    def get_metrics(self, loss: float) -> dict[str, Metrics]:
         """Get text to print for all metrics."""
-        text = f"Loss: {round(loss, 7)}"
+        metrics_dict = {"Loss": round(loss, 7)}
         for metric in self.metrics_list:
-            text += f", {metric.get_name()}: {metric.get_metric()}"
-        return text
+            metrics_dict[metric.get_name()] = metric.get_metric()
+        return metrics_dict
 
     def reset_metrics(self) -> None:
         """Reset all metrics."""

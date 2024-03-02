@@ -106,5 +106,6 @@ if __name__ == "__main__":
               print_metrics=True,
               batch_size=32)
 
-    ev = model.evaluate(x_test=x_test, y_test=y_test)
-    print(ev)
+    evaluation = model.evaluate(x_test=x_test, y_test=y_test)
+    for k, v in evaluation.items():
+        print(k, v)
