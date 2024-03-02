@@ -159,7 +159,7 @@ if __name__ == "__main__":
         x_train=x_train,
         y_train=y_train,
         epochs=200,
-        print_loss=False,
+        print_metrics=False,
         batch_size=32
     )
     print(f"Final loss: {loss}")
