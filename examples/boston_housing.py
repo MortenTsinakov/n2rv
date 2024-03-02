@@ -1,9 +1,6 @@
 """
 Example of using the library on Boston housing dataset.
 
-To run this file, create a dataset directory (called 'datasets') one directory up from this file and
-add Boston housing dataset with the name 'HousingData.csv' in that directory.
-
 The Boston housing dataset can be found here:
 https://www.kaggle.com/datasets/altavish/boston-housing-dataset?resource=download
 """

@@ -1,9 +1,6 @@
 """
 Example of using the library on iris dataset.
 
-To run this file, create a dataset directory (called 'datasets') one directory up from this file and
-add Iris dataset with the name 'iris.data' in that directory.
-
 The iris dataset can be downloaded from:
 https://archive.ics.uci.edu/dataset/53/iris
 """
