@@ -7,6 +7,7 @@ from exceptions import exception
 from layers.input import Input
 from layers.layer import Layer
 from optimizers.optimizer import Optimizer
+from metrics.model_metrics import ModelMetrics
 
 
 class Model:
@@ -19,11 +20,16 @@ class Model:
         self.optimizer = None
         self.layers = []
         self.loss = 0
+        self.metrics = None
 
-    def compile(self, loss_fn: str, optimizer: Optimizer) -> None:
+    def compile(self,
+                loss_fn: str,
+                optimizer: Optimizer,
+                metrics: list = None) -> None:
         """Compile the model - define loss, optimizer and create layer graph."""
         self.loss_fn = loss.Loss(loss_fn)
         self.optimizer = optimizer
+        self.metrics = ModelMetrics(metrics)
         # Create a layer graph
         layers = [self.outputs]
         while layers:
@@ -35,6 +41,21 @@ class Model:
                 layers.append(current.previous_layer)
         self.layers.reverse()
         self.validate_on_compile()
+
+    def evaluate(self, x_test: np.ndarray, y_test: np.ndarray) -> None:
+        """
+        Print out loss and metrics on test set.
+        
+        Inputs:
+            x_test (np.ndarray) - test features
+            y_test (np.ndarray) - test labels
+        """
+        pred = self.predict(x_test)
+        loss = self.loss_fn.forward(y_test, pred)
+        self.metrics.update_metrics(true=y_test, pred=pred)
+        text = f"Test - [{self.metrics.get_metrics(loss=loss)}]"
+        self.metrics.reset_metrics()
+        return text
 
     def predict(self, input_data: np.ndarray) -> np.ndarray:
         """Predict using the trained model."""
@@ -50,13 +71,13 @@ class Model:
             x_train: np.ndarray,
             y_train: np.ndarray,
             epochs: int,
-            print_loss: bool =True,
-            batch_size: int =1) -> np.ndarray:
+            print_metrics: bool =True,
+            batch_size: int = 32) -> np.ndarray:
         """Train the model."""
         self.validate_on_fit(x_train,
                              y_train,
                              epochs,
-                             print_loss,
+                             print_metrics,
                              batch_size)
         n_batches = len(x_train) // batch_size
         if len(x_train) % batch_size != 0:
@@ -70,10 +91,10 @@ class Model:
                 self.forward(x_batch)
                 self.backward(y_batch)
                 self.update()
+                self.metrics.update_metrics(y_batch, self.outputs.output)
             self.loss /= n_batches
-            if print_loss:
-                print(f"Epoch: {epoch + 1}/{epochs}\t" +
-                      f"error={round(self.loss, 7)}")
+            if print_metrics:
+                self.print_metrics(epoch + 1, epochs)
         return self.loss
 
     def forward(self, x: np.ndarray) -> None:
@@ -94,6 +115,18 @@ class Model:
     def update(self) -> None:
         """Delegate updating the parameters to the optimizer."""
         self.optimizer.update(self.layers)
+
+    def print_metrics(self, epoch: int, epochs: int) -> None:
+        """
+        Print metrics.
+        
+        Inputs:
+            epoch (int) - current iteration
+            epochs (int) - total iterations
+        """
+        text = self.metrics.get_metrics(self.loss)
+        print(f"Epoch: {epoch}/{epochs} Train - [{text}]")
+        self.metrics.reset_metrics()
 
     # VALIDATION FUNCTIONS
 

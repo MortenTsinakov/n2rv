@@ -177,7 +177,7 @@ class TestModel(unittest.TestCase):
             model.fit(x_train=x,
                       y_train=y,
                       epochs=1,
-                      print_loss=False,
+                      print_metrics=False,
                       batch_size=1)
             self.fail(error_text)
         except TypeError:
@@ -189,7 +189,7 @@ class TestModel(unittest.TestCase):
             model.fit(x_train=x,
                       y_train=y,
                       epochs=1,
-                      print_loss=False,
+                      print_metrics=False,
                       batch_size=1)
             self.fail(error_text)
         except TypeError:
@@ -201,7 +201,7 @@ class TestModel(unittest.TestCase):
             model.fit(x_train=x,
                       y_train=y,
                       epochs=1,
-                      print_loss=False,
+                      print_metrics=False,
                       batch_size=1)
             self.fail(error_text)
         except TypeError:
@@ -221,7 +221,7 @@ class TestModel(unittest.TestCase):
             model.fit(x_train=x,
                       y_train=y,
                       epochs=1,
-                      print_loss=False,
+                      print_metrics=False,
                       batch_size=1)
             self.fail("Mismatch between Input layer shape and data shape " +
                       "fed into model.fit() should throw an exception.")
@@ -243,7 +243,7 @@ class TestModel(unittest.TestCase):
             model.fit(x_train=x,
                       y_train=y,
                       epochs=1,
-                      print_loss=False,
+                      print_metrics=False,
                       batch_size=1)
             self.fail(error_text)
         except TypeError:
@@ -255,7 +255,7 @@ class TestModel(unittest.TestCase):
             model.fit(x_train=x,
                       y_train=y,
                       epochs=1,
-                      print_loss=False,
+                      print_metrics=False,
                       batch_size=1)
             self.fail(error_text)
         except TypeError:
@@ -267,7 +267,7 @@ class TestModel(unittest.TestCase):
             model.fit(x_train=x,
                       y_train=y,
                       epochs=1,
-                      print_loss=False,
+                      print_metrics=False,
                       batch_size=1)
             self.fail(error_text)
         except TypeError:
@@ -285,7 +285,7 @@ class TestModel(unittest.TestCase):
             model.fit(x_train=x,
                       y_train=y,
                       epochs=1,
-                      print_loss=False,
+                      print_metrics=False,
                       batch_size=1)
             self.fail("An exception should be thrown if the output layer's " +
                       "output dimension doesn't match the label dimensions.")
@@ -304,7 +304,7 @@ class TestModel(unittest.TestCase):
             model.fit(x_train=x,
                       y_train=y,
                       epochs=1,
-                      print_loss=False,
+                      print_metrics=False,
                       batch_size=1)
             self.fail("If the number of examples doesn't fit the number of labesl " +
                       "an exception should be thrown.")
@@ -328,7 +328,7 @@ class TestModel(unittest.TestCase):
             model.fit(x_train=x,
                       y_train=y,
                       epochs=epochs,
-                      print_loss=False,
+                      print_metrics=False,
                       batch_size=1)
             self.fail(value_error_text)
         except ValueError:
@@ -338,7 +338,7 @@ class TestModel(unittest.TestCase):
             model.fit(x_train=x,
                       y_train=y,
                       epochs=epochs,
-                      print_loss=False,
+                      print_metrics=False,
                       batch_size=1)
             self.fail(value_error_text)
         except ValueError:
@@ -348,7 +348,7 @@ class TestModel(unittest.TestCase):
             model.fit(x_train=x,
                       y_train=y,
                       epochs=epochs,
-                      print_loss=False,
+                      print_metrics=False,
                       batch_size=1)
             self.fail(type_error_text)
         except TypeError:
@@ -358,7 +358,7 @@ class TestModel(unittest.TestCase):
             model.fit(x_train=x,
                       y_train=y,
                       epochs=epochs,
-                      print_loss=False,
+                      print_metrics=False,
                       batch_size=1)
             self.fail(type_error_text)
         except TypeError:
@@ -368,7 +368,7 @@ class TestModel(unittest.TestCase):
             model.fit(x_train=x,
                       y_train=y,
                       epochs=epochs,
-                      print_loss=False,
+                      print_metrics=False,
                       batch_size=1)
             self.fail(type_error_text)
         except TypeError:
@@ -389,7 +389,7 @@ class TestModel(unittest.TestCase):
             model.fit(x_train=x,
                       y_train=y,
                       epochs=1,
-                      print_loss=print_loss,
+                      print_metrics=print_loss,
                       batch_size=1)
             self.fail(type_error_text)
         except TypeError:
@@ -399,7 +399,7 @@ class TestModel(unittest.TestCase):
             model.fit(x_train=x,
                       y_train=y,
                       epochs=1,
-                      print_loss=print_loss,
+                      print_metrics=print_loss,
                       batch_size=1)
             self.fail(type_error_text)
         except TypeError:
@@ -422,7 +422,7 @@ class TestModel(unittest.TestCase):
             model.fit(x_train=x,
                       y_train=y,
                       epochs=1,
-                      print_loss=False,
+                      print_metrics=False,
                       batch_size=batch_size)
             self.fail(type_error_text)
         except TypeError:
@@ -432,7 +432,7 @@ class TestModel(unittest.TestCase):
             model.fit(x_train=x,
                       y_train=y,
                       epochs=1,
-                      print_loss=False,
+                      print_metrics=False,
                       batch_size=batch_size)
             self.fail(type_error_text)
         except TypeError:
@@ -442,7 +442,7 @@ class TestModel(unittest.TestCase):
             model.fit(x_train=x,
                       y_train=y,
                       epochs=1,
-                      print_loss=False,
+                      print_metrics=False,
                       batch_size=batch_size)
             self.fail(type_error_text)
         except TypeError:
@@ -452,7 +452,7 @@ class TestModel(unittest.TestCase):
             model.fit(x_train=x,
                       y_train=y,
                       epochs=1,
-                      print_loss=False,
+                      print_metrics=False,
                       batch_size=batch_size)
             self.fail(value_error_text)
         except ValueError:
@@ -462,7 +462,7 @@ class TestModel(unittest.TestCase):
             model.fit(x_train=x,
                       y_train=y,
                       epochs=1,
-                      print_loss=False,
+                      print_metrics=False,
                       batch_size=batch_size)
             self.fail(value_error_text)
         except ValueError:
@@ -472,7 +472,7 @@ class TestModel(unittest.TestCase):
             model.fit(x_train=x,
                       y_train=y,
                       epochs=1,
-                      print_loss=False,
+                      print_metrics=False,
                       batch_size=batch_size)
             self.fail(value_error_text)
         except ValueError:

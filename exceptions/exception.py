@@ -20,3 +20,9 @@ class ShapeMismatchError(Exception):
     def __init__(self, message="Shape mismatched") -> None:
         self.message = message
         super().__init__(self.message)
+
+class DuplicateItemsError(Exception):
+    """Exception thrown when there are duplicate values in metrics list."""
+    def __init__(self, message="Duplicate values in list") -> None:
+        self.message = message
+        super().__init__(self.message)
