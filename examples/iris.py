@@ -1,9 +1,6 @@
 """
 Example of using the library on iris dataset.
 
-To run this file, create a dataset directory (called 'datasets') one directory up from this file and
-add Iris dataset with the name 'iris.data' in that directory.
-
 The iris dataset can be downloaded from:
 https://archive.ics.uci.edu/dataset/53/iris
 """
@@ -21,6 +18,7 @@ from models.model import Model
 from layers.input import Input
 from layers.dense import Dense
 from optimizers.adam import Adam
+from metrics.accuracy import Accuracy
 
 
 def import_data(filename: str) -> pd.DataFrame:
@@ -100,19 +98,14 @@ if __name__ == "__main__":
 
     model = get_model()
     model.compile(loss_fn='categorical_cross_entropy',
-                optimizer=Adam())
-    loss = model.fit(x_train=x_train,
-                    y_train=y_train,
-                    epochs=200,
-                    print_loss=False,
-                    batch_size=32)
-    print(f"Final loss: {loss}")
+                optimizer=Adam(),
+                metrics=[Accuracy(decimal_places=4)])
+    model.fit(x_train=x_train,
+              y_train=y_train,
+              epochs=150,
+              print_metrics=True,
+              batch_size=32)
 
-    preds = model.predict(x_test)
-
-    y_hats = np.argmax(preds, axis=1)
-    ys = np.argmax(y_test, axis=1)
-
-    correct = sum([1 for y_hat, y in zip(y_hats, ys) if y_hat == y])
-    print(f"Correct predictions: {correct}/{len(y_test)}")
-    print(f"{round(correct / len(y_test) * 100, 2)}%")
+    evaluation = model.evaluate(x_test=x_test, y_test=y_test)
+    for k, v in evaluation.items():
+        print(k, v)

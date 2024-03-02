@@ -1,9 +1,6 @@
 """
 Example of using the library on Boston housing dataset.
 
-To run this file, create a dataset directory (called 'datasets') one directory up from this file and
-add Boston housing dataset with the name 'HousingData.csv' in that directory.
-
 The Boston housing dataset can be found here:
 https://www.kaggle.com/datasets/altavish/boston-housing-dataset?resource=download
 """
@@ -146,7 +143,7 @@ if __name__ == "__main__":
     loss = model.fit(x_train=x_train,
                      y_train=y_train,
                      epochs=200,
-                     print_loss=False,
+                     print_metrics=False,
                      batch_size=32)
     print(f"Final loss: {loss}")
 

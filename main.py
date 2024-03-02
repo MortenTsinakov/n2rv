@@ -57,7 +57,7 @@ model.compile(loss_fn="binary_cross_entropy",
 loss = model.fit(x_train=x_train,
                  y_train=y_train,
                  epochs=200,
-                 print_loss=False,
+                 print_metrics=True,
                  batch_size=32)
 
 print(f"Final loss: {loss}")

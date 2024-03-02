@@ -1,9 +1,6 @@
 """
 Example of using the library on Titanic dataset.
 
-To run this file, create a dataset directory (called 'datasets') one directory up from this file and
-add Titanic dataset with the name 'Titanic-Dataset.csv' in that directory.
-
 The Titanic dataset can be downloaded from:
 https://www.kaggle.com/datasets/yasserh/titanic-dataset
 """
@@ -159,7 +156,7 @@ if __name__ == "__main__":
         x_train=x_train,
         y_train=y_train,
         epochs=200,
-        print_loss=False,
+        print_metrics=False,
         batch_size=32
     )
     print(f"Final loss: {loss}")
