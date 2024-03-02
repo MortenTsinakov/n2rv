@@ -24,7 +24,7 @@ class ModelMetrics:
             metric.update(true, pred)
 
     def get_metrics(self, loss: float) -> None:
-        """Print all metrics."""
+        """Get text to print for all metrics."""
         text = f"Loss: {round(loss, 7)}"
         for metric in self.metrics_list:
             text += f", {metric.get_name()}: {metric.get_metric()}"
