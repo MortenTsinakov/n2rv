@@ -8,7 +8,6 @@ https://archive.ics.uci.edu/dataset/53/iris
 import sys
 import os
 import pandas as pd
-import numpy as np
 
 # Add the project directory to the Python path
 project_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))

@@ -9,8 +9,6 @@ from random import randint
 import sys
 import os
 import pandas as pd
-import matplotlib.pyplot as plt
-import numpy as np
 
 # Add the project directory to the Python path
 project_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
@@ -72,65 +70,6 @@ def get_model() -> Model:
                     activation='sigmoid',
                     weights_initializer='xavier_normal')(x)
     return Model(inputs=inputs, outputs=outputs)
-
-
-def plot_the_comparison(pred, true):
-    """Plot the predictions and the true values to compare them."""
-    x = np.arange(len(pred))
-
-    width = 0.5
-
-    plt.figure(figsize=(10, 6))
-    plt.bar(x - width / 2, pred, width, color='red', alpha=0.5, label='Predicted')
-    plt.bar(x - width / 2, true, width, color='green', alpha=0.5, label='Actual')
-
-    plt.xticks([])
-    plt.xlabel('Data points')
-    plt.ylabel('Median value of owner-occupied homes in dollars.')
-    plt.title('Comparison of Predicted vs Actual Values')
-    plt.legend()
-
-    plt.grid(False)
-    plt.show()
-
-
-def count_errors(pred, true):
-    """Count the prediction errors by range."""
-    error_counts = {
-        "<1000": 0,
-        "1000-2000": 0,
-        "2000-3000": 0,
-        "3000-4000": 0,
-        "4000-5000": 0,
-        ">5000": 0
-    }
-    max_error = float('-inf')
-    min_error = float('inf')
-
-    for p, t in zip(pred, true):
-        diff = abs(p[0] - t[0])
-        if diff > max_error:
-            max_error = diff
-        if diff < min_error:
-            min_error = diff
-        if diff < 1000:
-            error_counts['<1000'] += 1
-        elif 1000 <= diff < 2000:
-            error_counts['1000-2000'] += 1
-        elif 2000 <= diff < 3000:
-            error_counts['2000-3000'] += 1
-        elif 3000 <= diff < 4000:
-            error_counts['3000-4000'] += 1
-        elif 4000 <= diff < 5000:
-            error_counts['4000-5000'] += 1
-        else:
-            error_counts['>5000'] += 1
-
-    for k, v in error_counts.items():
-        print(f"Predictions with error {k}: {v}")
-    print()
-    print(f"Min error: {round(min_error, 2)}")
-    print(f"Max error: {round(max_error, 2)}")
 
 
 if __name__ == "__main__":
