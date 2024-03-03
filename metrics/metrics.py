@@ -29,7 +29,7 @@ class Metrics:
 
     def get_name(self) -> str:
         """Return the name of the metric."""
-        raise NotImplementedError
+        return self.name
 
     def __eq__(self, other):
         if isinstance(other, type(self)):

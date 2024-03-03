@@ -102,10 +102,13 @@ if __name__ == "__main__":
                 metrics=[Accuracy(decimal_places=4)])
     model.fit(x_train=x_train,
               y_train=y_train,
-              epochs=150,
+              epochs=100,
               print_metrics=True,
               batch_size=32)
 
+    print()
+    print("Evaluation on test data")
+    print("-----------------------")
     evaluation = model.evaluate(x_test=x_test, y_test=y_test)
     for k, v in evaluation.items():
         print(k, v)

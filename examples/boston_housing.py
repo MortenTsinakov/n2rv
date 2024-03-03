@@ -20,6 +20,7 @@ from models.model import Model
 from layers.input import Input
 from layers.dense import Dense
 from optimizers.adam import Adam
+from metrics.mse import MSE
 
 
 def import_data(filename: str) -> pd.DataFrame:
@@ -139,19 +140,17 @@ if __name__ == "__main__":
 
     model = get_model()
     model.compile(loss_fn="mse",
-                  optimizer=Adam())
+                  optimizer=Adam(),
+                  metrics=[MSE(decimal_places=7)])
     loss = model.fit(x_train=x_train,
                      y_train=y_train,
-                     epochs=200,
-                     print_metrics=False,
+                     epochs=100,
+                     print_metrics=True,
                      batch_size=32)
-    print(f"Final loss: {loss}")
 
-    # Scale predictions and actual results back and because they are
-    # thouseands in original dataset multiply with 1000
-    preds = model.predict(x_test)
-    preds = (preds * (label_max - label_min ) + label_min) * 1000
-    y_test = (y_test * (label_max - label_min) + label_min) * 1000
-
-    count_errors(preds, y_test)
-    plot_the_comparison(preds.reshape(-1), y_test.reshape(-1))
+    print()
+    print("Evaluation on test data")
+    print("-----------------------")
+    evaluation = model.evaluate(x_test=x_test, y_test=y_test)
+    for k, v in evaluation.items():
+        print(k, v)

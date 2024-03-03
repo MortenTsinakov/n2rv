@@ -43,7 +43,7 @@ class Accuracy(Metrics):
         return 0
 
     def reset(self) -> None:
-        """Reset the metrics after an epoch."""
+        """Reset the metrics variables."""
         self.correct = 0
         self.total = 0
 
@@ -55,7 +55,3 @@ class Accuracy(Metrics):
             raise ValueError(f"The number of decimal places in Accuracy metric should be >= 0. Got {decimal_places}")
         if decimal_places > 10:
             raise ValueError(f"The number of decimal places in Accuracy metric should be <= 10. Got {decimal_places}")
-
-    def get_name(self) -> str:
-        """Return the name of the metric."""
-        return self.name
