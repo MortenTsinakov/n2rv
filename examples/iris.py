@@ -8,7 +8,6 @@ https://archive.ics.uci.edu/dataset/53/iris
 import sys
 import os
 import pandas as pd
-import numpy as np
 
 # Add the project directory to the Python path
 project_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
@@ -102,10 +101,13 @@ if __name__ == "__main__":
                 metrics=[Accuracy(decimal_places=4)])
     model.fit(x_train=x_train,
               y_train=y_train,
-              epochs=150,
+              epochs=100,
               print_metrics=True,
               batch_size=32)
 
+    print()
+    print("Evaluation on test data")
+    print("-----------------------")
     evaluation = model.evaluate(x_test=x_test, y_test=y_test)
     for k, v in evaluation.items():
         print(k, v)

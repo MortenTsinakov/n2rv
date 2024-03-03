@@ -9,8 +9,6 @@ from random import randint
 import sys
 import os
 import pandas as pd
-import matplotlib.pyplot as plt
-import numpy as np
 
 # Add the project directory to the Python path
 project_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
@@ -20,6 +18,7 @@ from models.model import Model
 from layers.input import Input
 from layers.dense import Dense
 from optimizers.adam import Adam
+from metrics.mse import MSE
 
 
 def import_data(filename: str) -> pd.DataFrame:
@@ -73,65 +72,6 @@ def get_model() -> Model:
     return Model(inputs=inputs, outputs=outputs)
 
 
-def plot_the_comparison(pred, true):
-    """Plot the predictions and the true values to compare them."""
-    x = np.arange(len(pred))
-
-    width = 0.5
-
-    plt.figure(figsize=(10, 6))
-    plt.bar(x - width / 2, pred, width, color='red', alpha=0.5, label='Predicted')
-    plt.bar(x - width / 2, true, width, color='green', alpha=0.5, label='Actual')
-
-    plt.xticks([])
-    plt.xlabel('Data points')
-    plt.ylabel('Median value of owner-occupied homes in dollars.')
-    plt.title('Comparison of Predicted vs Actual Values')
-    plt.legend()
-
-    plt.grid(False)
-    plt.show()
-
-
-def count_errors(pred, true):
-    """Count the prediction errors by range."""
-    error_counts = {
-        "<1000": 0,
-        "1000-2000": 0,
-        "2000-3000": 0,
-        "3000-4000": 0,
-        "4000-5000": 0,
-        ">5000": 0
-    }
-    max_error = float('-inf')
-    min_error = float('inf')
-
-    for p, t in zip(pred, true):
-        diff = abs(p[0] - t[0])
-        if diff > max_error:
-            max_error = diff
-        if diff < min_error:
-            min_error = diff
-        if diff < 1000:
-            error_counts['<1000'] += 1
-        elif 1000 <= diff < 2000:
-            error_counts['1000-2000'] += 1
-        elif 2000 <= diff < 3000:
-            error_counts['2000-3000'] += 1
-        elif 3000 <= diff < 4000:
-            error_counts['3000-4000'] += 1
-        elif 4000 <= diff < 5000:
-            error_counts['4000-5000'] += 1
-        else:
-            error_counts['>5000'] += 1
-
-    for k, v in error_counts.items():
-        print(f"Predictions with error {k}: {v}")
-    print()
-    print(f"Min error: {round(min_error, 2)}")
-    print(f"Max error: {round(max_error, 2)}")
-
-
 if __name__ == "__main__":
     filename = "../datasets/HousingData.csv"
     data, label_min, label_max = get_data(filename=filename, random_state=randint(0, 100))
@@ -139,19 +79,17 @@ if __name__ == "__main__":
 
     model = get_model()
     model.compile(loss_fn="mse",
-                  optimizer=Adam())
+                  optimizer=Adam(),
+                  metrics=[MSE(decimal_places=7)])
     loss = model.fit(x_train=x_train,
                      y_train=y_train,
-                     epochs=200,
-                     print_metrics=False,
+                     epochs=100,
+                     print_metrics=True,
                      batch_size=32)
-    print(f"Final loss: {loss}")
 
-    # Scale predictions and actual results back and because they are
-    # thouseands in original dataset multiply with 1000
-    preds = model.predict(x_test)
-    preds = (preds * (label_max - label_min ) + label_min) * 1000
-    y_test = (y_test * (label_max - label_min) + label_min) * 1000
-
-    count_errors(preds, y_test)
-    plot_the_comparison(preds.reshape(-1), y_test.reshape(-1))
+    print()
+    print("Evaluation on test data")
+    print("-----------------------")
+    evaluation = model.evaluate(x_test=x_test, y_test=y_test)
+    for k, v in evaluation.items():
+        print(k, v)
