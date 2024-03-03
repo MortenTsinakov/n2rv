@@ -5,7 +5,6 @@ The Boston housing dataset can be found here:
 https://www.kaggle.com/datasets/altavish/boston-housing-dataset?resource=download
 """
 
-from random import randint
 import sys
 import os
 import pandas as pd
@@ -18,7 +17,7 @@ from models.model import Model
 from layers.input import Input
 from layers.dense import Dense
 from optimizers.adam import Adam
-from metrics.mse import MSE
+from metrics.mae import MAE
 
 
 def import_data(filename: str) -> pd.DataFrame:
@@ -47,7 +46,7 @@ def train_test_split(dataset: pd.DataFrame, split: float = 0.8) -> tuple:
     return x_tr, y_tr, x_te, y_te
 
 
-def get_data(filename: str, random_state: int = 42) -> tuple:
+def get_data(filename: str, random_state: int = None) -> tuple:
     """Import and prepare data for training."""
     data = import_data(filename=filename)
     data = fill_nan_values_with_mean(data)
@@ -62,34 +61,43 @@ def get_model() -> Model:
     inputs = Input(shape=(13, ))
     x = Dense(output_size=64,
               activation='relu',
-              weights_initializer='he_uniform')(inputs)
-    x = Dense(output_size=32,
+              weights_initializer='he_normal')(inputs)
+    x = Dense(output_size=128,
               activation='relu',
-              weights_initializer='he_uniform')(x)
+              weights_initializer='he_normal')(x)
+    x = Dense(output_size=64,
+              activation='relu',
+              weights_initializer='he_normal')(x)
     outputs = Dense(1,
-                    activation='sigmoid',
+                    activation='tanh',
                     weights_initializer='xavier_normal')(x)
     return Model(inputs=inputs, outputs=outputs)
 
 
 if __name__ == "__main__":
     filename = "../datasets/HousingData.csv"
-    data, label_min, label_max = get_data(filename=filename, random_state=randint(0, 100))
-    x_train, y_train, x_test, y_test = train_test_split(data)
+    data, label_min, label_max = get_data(filename=filename)
+    x_train, y_train, x_test, y_test = train_test_split(data, split=0.75)
 
     model = get_model()
     model.compile(loss_fn="mse",
                   optimizer=Adam(),
-                  metrics=[MSE(decimal_places=7)])
+                  metrics=[MAE()])
     loss = model.fit(x_train=x_train,
                      y_train=y_train,
-                     epochs=100,
-                     print_metrics=True,
+                     epochs=500,
+                     print_metrics=False,
                      batch_size=32)
 
     print()
     print("Evaluation on test data")
     print("-----------------------")
     evaluation = model.evaluate(x_test=x_test, y_test=y_test)
+    preds = model.predict(x_test)
     for k, v in evaluation.items():
         print(k, v)
+
+    print()
+    mae = evaluation["Mean Absolute Error"]
+    denormalized_error = mae * (label_max - label_min) * 1000
+    print(f"Denormalized average prediciton error: ${round(denormalized_error, 2)}")
