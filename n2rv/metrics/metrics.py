@@ -1,18 +1,18 @@
 """The parent metrics file."""
 
-
 import numpy as np
 
 
 class Metrics:
     """The parent metrics class."""
+
     def __init__(self, name) -> None:
         self.name = name
 
     def update(self, true: np.ndarray, pred: np.ndarray) -> None:
         """
         Update the metrics.
-        
+
         Inputs:
             true (np.ndarray) - true labels
             pred (np.ndarray) - predictions from the model
@@ -20,7 +20,12 @@ class Metrics:
         raise NotImplementedError
 
     def get_metric(self) -> float:
-        """Return the final metric."""
+        """
+        Return the final metric.
+
+        Return:
+            float - the final calculated metric value.
+        """
         raise NotImplementedError
 
     def reset(self) -> None:
@@ -28,10 +33,14 @@ class Metrics:
         raise NotImplementedError
 
     def get_name(self) -> str:
-        """Return the name of the metric."""
+        """
+        Return:
+            str - the name of the metric.
+        """
         return self.name
 
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
+        """Compare two Metric instances by their names."""
         if isinstance(other, type(self)):
             return self.name == other.name
         return False

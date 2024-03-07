@@ -21,13 +21,13 @@ paths = [
 sys.path += [os.path.dirname(name) for name in paths]
 
 # Import files for testing
-from models.model import Model
-from layers.dense import Dense
-from layers.input import Input
-from optimizers.sgd import SGD
-from exceptions.exception import IncompatibleLayerError,\
-                                 DisconnectedLayersError,\
-                                 ShapeMismatchError
+from n2rv.models.model import Model
+from n2rv.layers.dense import Dense
+from n2rv.layers.input import Input
+from n2rv.optimizers.sgd import SGD
+from n2rv.exceptions.exception import IncompatibleLayerError,\
+                                      DisconnectedLayersError,\
+                                      ShapeMismatchError
 
 np.random.seed(0)
 

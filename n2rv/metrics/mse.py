@@ -1,8 +1,7 @@
 """The file for Mean Squared Error metric."""
 
-
 import numpy as np
-from metrics.metrics import Metrics
+from n2rv.metrics.metrics import Metrics
 
 
 class MSE(Metrics):
@@ -32,21 +31,35 @@ class MSE(Metrics):
 
         Calculates the MSE metric by dividing summed and squared error
         over all samples by the number of samples.
+
+        Return:
+            float - get the average error between the actual values and the
+                predicted values
         """
         if self.n_samples:
             return round(self.error / self.n_samples, self.decimal_places)
         return 0
-    
+
     def reset(self) -> None:
         """Reset the metrics variables."""
         self.error = 0
         self.n_samples = 0
-    
+
     def validate_inputs(self, decimal_places) -> None:
         """Validate inputs on initialization."""
         if not isinstance(decimal_places, int):
-            raise TypeError(f"The argument decimal_places in MSE metric should be of type int. Got {type(decimal_places)}")
+            raise TypeError(
+                "The argument decimal_places in MSE metric"
+                + "should be of type int."
+                + f"Got {type(decimal_places)}"
+            )
         if decimal_places < 0:
-            raise ValueError(f"The number of decimal places in MSE metric should be >= 0. Got {decimal_places}")
+            raise ValueError(
+                "The number of decimal places in MSE metric"
+                + f"should be >= 0. Got {decimal_places}"
+            )
         if decimal_places > 10:
-            raise ValueError(f"The number of decimal places in MSE metric should be <= 10. Got {decimal_places}")
+            raise ValueError(
+                "The number of decimal places in MSE metric"
+                + f"should be <= 10. Got {decimal_places}"
+            )

@@ -2,8 +2,8 @@
 
 
 import numpy as np
-from optimizers.optimizer import Optimizer
-from layers.layer import Layer
+from n2rv.layers.layer import Layer
+from n2rv.optimizers.optimizer import Optimizer
 
 
 class Adam(Optimizer):
@@ -19,12 +19,15 @@ class Adam(Optimizer):
 
         Creates an Adam optimizer with the specified hyperparameters.
 
-        Parameters:
+        Inputs:
             learning_rate (flaot): The learning rate, controlling the step
                                    size during gradient descent.
-            beta1 (float): The exponential decay rate for the first moment estimates.
-            beta2 (float): The exponential decay rate for the second moment estimates.
-            epsilon (float); A small value added to the denominator for numerical stability.
+            beta1 (float): The exponential decay rate for the first
+                           moment estimates.
+            beta2 (float): The exponential decay rate for the second
+                           moment estimates.
+            epsilon (float): A small value added to the denominator for
+                             numerical stability.
         """
         self.validate_arguments(learning_rate=learning_rate,
                                 beta1=beta1,
@@ -42,15 +45,16 @@ class Adam(Optimizer):
         """
         Update the parameters for all layers in the network.
 
-        Initializes the momentum terms and squared gradient average terms to zeros if they
-        haven't been initialized yet.
-        Iterates through the layers in the model and using helper methods updates the
-        layer weights and biases.
-        
-        Parameters:
+        Initializes the momentum terms and squared gradient average terms to
+        zeros if they haven't been initialized yet.
+        Iterates through the layers in the model and using helper methods
+        updates the layer weights and biases.
+
+        Inputs:
             layers (list[Layer]): List of layers in the neural network.
         """
-        # Initialize momentum terms and squared gradient average terms before training begins
+        # Initialize momentum terms and squared gradient average terms before
+        # training begins
         if self.time_step == 0:
             for layer in layers:
                 if layer.trainable:
@@ -60,9 +64,11 @@ class Adam(Optimizer):
                     squared_grad_avg_b = np.zeros_like(layer.bias)
                     self.momentum_terms[layer] = {"w": momentum_term_w,
                                                   "b": momentum_term_b}
-                    self.squared_grad_avg_terms[layer] = {"w": squared_grad_avg_w,
-                                                          "b": squared_grad_avg_b}
-        # Iterate through all the layers and update the parameters for trainable ones
+                    self.squared_grad_avg_terms[layer] =\
+                        {"w": squared_grad_avg_w,
+                         "b": squared_grad_avg_b}
+        # Iterate through all the layers and update the parameters for
+        # trainable ones
         self.time_step += 1
         for layer in layers:
             if layer.trainable:
@@ -71,29 +77,36 @@ class Adam(Optimizer):
                 self.update_squared_grad_avg_weight_term_for_layer(layer)
                 self.update_squared_grad_avg_bias_term_for_layer(layer)
                 # Momentum term for weights with bias correction applied
-                m_hat_w = self.get_momentum_weight_term_with_corrected_bias_for_layer(layer)
+                m_hat_w = self.get_momentum_weight_term(layer)
                 # Momentum term for biases with bias correction applied
-                m_hat_b = self.get_momentum_bias_term_with_corrected_bias_for_layer(layer)
-                # Squared gradient average term for weights with bias correction applied
-                v_hat_w = self.get_squared_grad_avg_weight_term_with_corrected_bias_for_layer(layer)
-                # Squared gradient average term for biases with bias correction applied
-                v_hat_b = self.get_squared_grad_avg_bias_term_with_corrected_bias_for_layer(layer)
-                layer.update(self.get_change_of_weight_for_layer(m_hat_w, v_hat_w),
-                             self.get_change_of_bias_for_layer(m_hat_b, v_hat_b))
+                m_hat_b = self.get_momentum_bias_term(layer)
+                # Squared gradient average term for weights with bias
+                # correction applied
+                v_hat_w = self.get_sq_grad_avg_weight_term(layer)
+                # Squared gradient average term for biases with bias
+                # correction applied
+                v_hat_b = self.get_sq_grad_avg_bias_term(layer)
+                layer.update(self.get_change_of_weight_for_layer(m_hat_w,
+                                                                 v_hat_w),
+                             self.get_change_of_bias_for_layer(m_hat_b,
+                                                               v_hat_b))
 
     def update_momentum_weight_term_for_layer(self, layer: Layer) -> None:
         """
         Updates the momentum term for the weights of a specific layer.
 
         Implements the momentum update rule for the weights of a layer.
-        It calculates the new momentum term based on previous term, the learning rate,
-        the beta1 hyperparameter and the gradients of the weights.
-        
-        Parameters:
-            layer (Layer): The layer for which the momentum weight term will be updated.
+        It calculates the new momentum term based on previous term, the
+        learning rate, the beta1 hyperparameter and the gradients of
+        the weights.
+
+        Inputs:
+            layer (Layer): The layer for which the momentum weight term will
+                be updated.
         """
-        self.momentum_terms[layer]["w"] = self.beta1 * self.momentum_terms[layer]["w"]\
-                                          + (1 - self.beta1) * layer.grad_weights
+        self.momentum_terms[layer]["w"] = self.beta1 *\
+            self.momentum_terms[layer]["w"]\
+            + (1 - self.beta1) * layer.grad_weights
 
     def update_momentum_bias_term_for_layer(self, layer: Layer) -> None:
         """
@@ -102,46 +115,54 @@ class Adam(Optimizer):
         Implements the momentum update rule for the biases of a layer.
         It calculates the new momentum term based on previous term,
         the beta1 hyperparameter and the gradients of the biases.
-        
-        Parameters:
-            layer (Layer): The layer for which the momentum bias term will be updated.
-        """
-        self.momentum_terms[layer]["b"] = self.beta1 * self.momentum_terms[layer]["b"]\
-                                          + (1 - self.beta1) * layer.grad_bias
-
-    def update_squared_grad_avg_weight_term_for_layer(self, layer: Layer) -> None:
-        """
-        Update the squared gradient average term for weights for a specific layer.
-
-        Implements the squared gradient average update rule for the weights of a layer.
-        It calculates the new squared gradient average term based on the previous term,
-        the beta2 hyperparameter and the gradients of the weights.
 
         Parameters:
-            layer (Layer): The layer for which the average squared gradient 
+            layer (Layer): The layer for which the momentum bias term will be
+                updated.
+        """
+        self.momentum_terms[layer]["b"] = self.beta1 *\
+            self.momentum_terms[layer]["b"]\
+            + (1 - self.beta1) * layer.grad_bias
+
+    def update_squared_grad_avg_weight_term_for_layer(self,
+                                                      layer: Layer) -> None:
+        """
+        Update the squared gradient average term for weights for a
+        specific layer.
+
+        Implements the squared gradient average update rule for the weights
+        of a layer. It calculates the new squared gradient average term
+        based on the previous term, the beta2 hyperparameter and the
+        gradients of the weights.
+
+        Parameters:
+            layer (Layer): The layer for which the average squared gradient
                            weight term will be updated.
         """
         self.squared_grad_avg_terms[layer]["w"] =\
-                    self.beta2 * self.squared_grad_avg_terms[layer]["w"]\
-                    + (1 - self.beta2) * (layer.grad_weights * layer.grad_weights)
+            self.beta2 * self.squared_grad_avg_terms[layer]["w"]\
+            + (1 - self.beta2) * (layer.grad_weights * layer.grad_weights)
 
-    def update_squared_grad_avg_bias_term_for_layer(self, layer: Layer) -> None:
+    def update_squared_grad_avg_bias_term_for_layer(self,
+                                                    layer: Layer) -> None:
         """
-        Update the squared gradient average term for biases for a specific layer.
+        Update the squared gradient average term for biases for a specific
+        layer.
 
-        Implements the squared gradient average update rule for the biases of a layer.
-        It calculates the new squared gradient average term based on the previous term, 
-        the beta2 hyperparameter and the gradients of the biases.
+        Implements the squared gradient average update rule for the biases of
+        a layer. It calculates the new squared gradient average term based on
+        the previous term, the beta2 hyperparameter and the gradients of the
+        biases.
 
         Parameters:
-            layer (Layer): The layer for which the average squared gradient 
-                           bias term will be updated.        
+            layer (Layer): The layer for which the average squared gradient
+                           bias term will be updated.
         """
         self.squared_grad_avg_terms[layer]["b"] =\
-                    self.beta2 * self.squared_grad_avg_terms[layer]["b"]\
-                    + (1 - self.beta2) * (layer.grad_bias * layer.grad_bias)
+            self.beta2 * self.squared_grad_avg_terms[layer]["b"]\
+            + (1 - self.beta2) * (layer.grad_bias * layer.grad_bias)
 
-    def get_momentum_weight_term_with_corrected_bias_for_layer(self, layer: Layer) -> np.ndarray:
+    def get_momentum_weight_term(self, layer: Layer) -> np.ndarray:
         """
         Calculates and returns the momentum weight term for a layer,
         incorporating bias correction.
@@ -156,10 +177,10 @@ class Adam(Optimizer):
         Returns:
             np.ndarray: The momentum weight term with corrected bias.
         """
-        return self.momentum_terms[layer]["w"] / (1 - (self.beta1 ** self.time_step))
+        return self.momentum_terms[layer]["w"] /\
+            (1 - (self.beta1 ** self.time_step))
 
-    def get_momentum_bias_term_with_corrected_bias_for_layer(self,
-                                                             layer: Layer) -> np.ndarray:
+    def get_momentum_bias_term(self, layer: Layer) -> np.ndarray:
         """
         Calculates and returns the momentum bias term for a layer,
         incorporating bias correction.
@@ -174,43 +195,45 @@ class Adam(Optimizer):
         Return:
             np.ndarray: The momentum bias term with corrected bias.
         """
-        return self.momentum_terms[layer]["b"] / (1 - (self.beta1 ** self.time_step))
+        return self.momentum_terms[layer]["b"] /\
+            (1 - (self.beta1 ** self.time_step))
 
-    def get_squared_grad_avg_weight_term_with_corrected_bias_for_layer(self,
-                                                                       layer: Layer) -> np.ndarray:
+    def get_sq_grad_avg_weight_term(self, layer: Layer) -> np.ndarray:
         """
-        Calculates and returns the squared gradient average weight term for a layer,
-        incorporating bias correction.
+        Calculates and returns the squared gradient average weight term for
+        a layer, incorporating bias correction.
 
-        Retrieves the squared gradient average term for the weights of a specific layer
-        and applies bias correction using the Adam algorithm formula.
-        This correction helps to ensure numerical stability during training,
-        especially in the early iterations.
+        Retrieves the squared gradient average term for the weights of
+        a specific layer and applies bias correction using the Adam
+        algorithm formula. This correction helps to ensure numerical
+        stability during training, especially in the early iterations.
 
         Parameters:
             layer (Layer): layer for which the term will be calculated.
         Returns:
-            np.ndarray: squared gradient average weight term with corrected bias.
+            np.ndarray: squared gradient average weight term with
+                corrected bias.
         """
-        return self.squared_grad_avg_terms[layer]["w"] / (1 - (self.beta2 ** self.time_step))
+        return self.squared_grad_avg_terms[layer]["w"] /\
+            (1 - (self.beta2 ** self.time_step))
 
-    def get_squared_grad_avg_bias_term_with_corrected_bias_for_layer(self,
-                                                                     layer: Layer) -> np.ndarray:
+    def get_sq_grad_avg_bias_term(self, layer: Layer) -> np.ndarray:
         """
-        Calculates and returns the squared gradient average bias term for a layer,
-        incorporating bias correction.
+        Calculates and returns the squared gradient average bias term for
+        a layer, incorporating bias correction.
 
-        Retrieves the squared gradient average term for the biases of a specific layer
-        and applies bias correction using the Adam algorithm formula.
-        This correction helps to ensure numerical stability during training,
-        especially in the early iterations.
+        Retrieves the squared gradient average term for the biases of a
+        specific layer and applies bias correction using the Adam
+        algorithm formula. This correction helps to ensure numerical
+        stability during training, especially in the early iterations.
 
         Parameters:
             layer (Layer): layer for which the term will be calculated.
         Returns:
             np.ndarray: squared gradient average bias term with corrected bias.
         """
-        return self.squared_grad_avg_terms[layer]["b"] / (1 - (self.beta2 ** self.time_step))
+        return self.squared_grad_avg_terms[layer]["b"] /\
+            (1 - (self.beta2 ** self.time_step))
 
     def get_change_of_weight_for_layer(self,
                                        m_hat_w: np.ndarray,
@@ -218,13 +241,15 @@ class Adam(Optimizer):
         """
         Calculates and returns the change of weights for a layer.
 
-        Uses the momentum term, squared gradient average term (after bias correction has 
-        been applied to both) and the learning rate to calculate the change in weights
-        for a specific layer. Adding the epsilon term will help to avoid zero division errors.
-        
+        Uses the momentum term, squared gradient average term (after bias
+        correction has been applied to both) and the learning rate to
+        calculate the change in weights for a specific layer. Adding the
+        epsilon term will help to avoid zero division errors.
+
         Parameters:
             m_hat_w: momentum weight term with corrected bias for the layer
-            v_hat_w: squared gradient average weight term with corrected bias for the layer
+            v_hat_w: squared gradient average weight term with corrected bias
+                for the layer
         Returns:
             np.ndarray: change of weights for the layer.
         """
@@ -236,14 +261,15 @@ class Adam(Optimizer):
         """
         Calculates and returns the change of biases for a layer.
 
-        Uses the momentum term and squared gradient average term for biases (after bias 
-        correction has been applied to both) and the learning rate to calculate the 
-        change in biases for a specific layer. Adding the epsilon term will help 
-        to avoid zero division errors.
+        Uses the momentum term and squared gradient average term for biases
+        (after bias correction has been applied to both) and the learning
+        rate to calculate the change in biases for a specific layer.
+        Adding the epsilon term will help to avoid zero division errors.
 
         Parameters:
             m_hat_w: momentum bias term with corrected bias for the layer
-            v_hat_w: squared gradient average bias term with corrected bias for the layer
+            v_hat_w: squared gradient average bias term with corrected bias
+                for the layer
         Returns:
             np.ndarray: change of weights for the layer.
         """
@@ -273,9 +299,11 @@ class Adam(Optimizer):
             ValueError: If the learning rate is not a positive value
         """
         if not isinstance(learning_rate, float):
-            raise TypeError(f"Learning rate has to be of type float. Got: {type(learning_rate)}")
+            raise TypeError("Learning rate has to be of type float." +
+                            f"Got: {type(learning_rate)}")
         if learning_rate <= 0:
-            raise ValueError(f"Learning rate has to be a positive value. Got {learning_rate}")
+            raise ValueError("Learning rate has to be a positive value." +
+                             f"Got {learning_rate}")
 
     def validate_beta(self, beta: float) -> None:
         """
@@ -288,10 +316,12 @@ class Adam(Optimizer):
             ValueError: If beta is not in range (0, 1)
         """
         if not isinstance(beta, float):
-            raise TypeError("Hyperparameters beta1 and beta2 have to be of type float" +\
+            raise TypeError("Hyperparameters beta1 and beta2 have to be of" +
+                            "type float" +
                             f"Got: {type(beta)}")
         if not 0 < beta < 1:
-            raise ValueError("Hyperparameters beta1 and beta2 have to be in range (0, 1)" +\
+            raise ValueError("Hyperparameters beta1 and beta2 have to be" +
+                             "in range (0, 1)" +
                              f"Got: {beta}")
 
     def validate_epsilon(self, epsilon: float) -> None:
@@ -305,6 +335,8 @@ class Adam(Optimizer):
             ValueError: If epsilon is not a positive value.
         """
         if not isinstance(epsilon, float):
-            raise TypeError(f"Hyperparameter epsilon has to be of type float. Got {type(epsilon)}")
+            raise TypeError("Hyperparameter epsilon has to be of type float." +
+                            f"Got {type(epsilon)}")
         if epsilon <= 0:
-            raise ValueError(f"Hyperparameter epsilon has to be a positive value. Got: {epsilon}")
+            raise ValueError("Hyperparameter epsilon has to be a positive" +
+                             f"value. Got: {epsilon}")

@@ -18,9 +18,9 @@ paths = [
 sys.path += [os.path.dirname(name) for name in paths]
 
 # Import files for testing
-from metrics.accuracy import Accuracy
-from metrics.model_metrics import ModelMetrics
-from exceptions.exception import DuplicateItemsError
+from n2rv.metrics.accuracy import Accuracy
+from n2rv.metrics.model_metrics import ModelMetrics
+from n2rv.exceptions.exception import DuplicateItemsError
 
 
 class TestMetrics(unittest.TestCase):

@@ -18,10 +18,10 @@ paths = [
 sys.path += [os.path.dirname(name) for name in paths]
 
 # Import files for testing
-from optimizers.adam import Adam
-from optimizers.momentum import Momentum
-from optimizers.rmsprop import RMSProp
-from optimizers.sgd import SGD
+from n2rv.optimizers.adam import Adam
+from n2rv.optimizers.momentum import Momentum
+from n2rv.optimizers.rmsprop import RMSProp
+from n2rv.optimizers.sgd import SGD
 
 
 class TestOptimizers(unittest.TestCase):
