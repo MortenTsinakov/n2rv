@@ -17,7 +17,7 @@ This library serves as a personal learning resource for understanding neural net
 
 - Python 3.10.12
 - Numpy 1.23.5
-- Pandas 2.12.0 (used in some examples to manipulate the input data)
+- Pandas 2.12.0 (used in examples to manipulate the input data)
 
 #### Installation
 
