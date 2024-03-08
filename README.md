@@ -27,7 +27,7 @@ git clone https://github.com/MortenTsinakov/n2rv.git
 ```
 #### Usage
 
-To run the program in a virtual environment, run those commands from the project root directory:
+To run the program in a virtual environment, run the following commands from the project root directory:
 
 1. Create a virtual environment: ```python3 -m venv venv```
 2. Activate the virtual environment: ```source venv/bin/activate```
