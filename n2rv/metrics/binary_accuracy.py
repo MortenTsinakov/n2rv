@@ -64,23 +64,23 @@ class BinaryAccuracy(Metrics):
     def validate_decimal_places(self, decimal_places: int) -> None:
         if not isinstance(decimal_places, int):
             raise TypeError(
-                "The argument decimal_places in Binary Accuracy metric"
-                + "should be of type int."
+                "The argument decimal_places in Binary Accuracy metric "
+                + "should be of type int. "
                 + f"Got {type(decimal_places)}"
             )
         if decimal_places < 0:
             raise ValueError(
-                "The number of decimal places in Binary Accuracy"
+                "The number of decimal places in Binary Accuracy "
                 + f"metric should be >= 0. Got {decimal_places}"
             )
         if decimal_places > 10:
             raise ValueError(
-                "The number of decimal places in Binary Accuracy"
+                "The number of decimal places in Binary Accuracy "
                 + f"metric should be <= 10. Got {decimal_places}"
             )
 
     def validate_threshold(self, threshold: float) -> None:
         if not isinstance(threshold, float):
-            raise TypeError("The threshold argument in Binary Accuracy" +
-                            "metric should be of type float." +
+            raise TypeError("The threshold argument in Binary Accuracy " +
+                            "metric should be of type float. " +
                             f"Got {type(threshold)}")
