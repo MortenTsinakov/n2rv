@@ -19,7 +19,6 @@ This library serves as a personal learning resource for understanding neural net
 - Numpy 1.23.5
 - Tensorflow 2.12.0 (used in some tests to compare the ouputs of implemented functions with those of the equivalent Tensorflow functions)
 - Pandas 2.12.0 (used in some examples to manipulate the input data)
-- Matplotlib 3.5.1 (used in some examples to visualize the results)
 
 #### Installation
 
