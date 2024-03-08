@@ -11,7 +11,7 @@ This library serves as a personal learning resource for understanding neural net
 - Various optimization algorithms
 - Various weight initialization techniques
 
-(check documentation to see the full list of implemented activation functions, loss functions etc.)
+(check documentation to see the full list of implemented components)
 
 #### Technologies used
 
@@ -25,10 +25,21 @@ Clone the repository:
 ```
 git clone https://github.com/MortenTsinakov/n2rv.git
 ```
-
 #### Usage
 
-Please check the documentation for examples demonstrating how to use the library
+To run the program in a virtual environment, run those commands from the project root directory:
+
+1. Create a virtual environment: ```python3 -m venv venv```
+2. Activate the virtual environment: ```source venv/bin/activate```
+3. Install necessary dependencies: ```pip install -r requirements.txt```
+4. Use the program, e.g run an example:
+  ```console
+  (venv) foo@bar:~/n2rv$ cd examples               # navigate to examples directory
+  (venv) foo@bar:~/n2rv/examples$ python3 iris.py  # run the iris example
+  ```
+5. When finished, deactivate the virtual environment: ```deactivate```
+
+For more info about how to use different components, check out the documentation
 
 #### Documentation
 
