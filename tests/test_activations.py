@@ -6,8 +6,6 @@ import os
 import sys
 import numpy as np
 # Don't print Tensorflow logs about GPUs and other such things.
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
-import tensorflow as tf
 
 # Get the absolute path of the current script
 current_script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -21,103 +19,260 @@ paths = [
 sys.path += [os.path.dirname(name) for name in paths]
 
 # Import files for testing
-from n2rv.activations import activation_functions
+from n2rv.activations import activation_functions as af
+
 
 np.random.seed(0)
 
 
 class TestActivations(unittest.TestCase):
     """Tests for activation functions."""
+
     def test_tanh(self):
-        """Test - Compare Tanh function to Tensorflow Tanh function."""
-        x = np.random.randn(10)
+        x = np.array([
+            [0.6, -0.2, 0.0],
+            [1.5, -2.0, -0.8],
+            [0.6, -1.2, 1.5]
+        ])
 
-        tf_tanh = tf.tanh(x).numpy()
-        custom_tanh = activation_functions.tanh(x)
+        desired = np.array([
+            [0.537049567, -0.1973753202, 0.0],
+            [0.9051482536, -0.9640275801, -0.6640367703],
+            [0.5370495670, -0.8336546070, 0.9051482536]
+        ])
 
-        np.testing.assert_allclose(custom_tanh, tf_tanh, 1e-5)
+        actual = af.tanh(x)
+
+        np.testing.assert_allclose(actual=actual, desired=desired)
+
+    def test_tanh_derivative(self):
+        x = np.array([
+            [0.6, -0.2, 0.0],
+            [1.5, -2.0, -0.8],
+            [0.6, -1.2, 1.5]
+        ])
+        output_error = np.array([
+            [0.1, 0.2, 0.3],
+            [-0.1, -0.2, -0.3],
+            [1.2, -1.5, 2.5]
+        ])
+        desired = np.array([
+            [0.07115777626, 0.1922085966, 0.3],
+            [-0.01807066389, -0.01413016497, -0.1677165503],
+            [0.8538933151, -0.4575299943, 0.4517665973]
+        ])
+
+        actual = af.tanh_derivative(x=x, output_error=output_error)
+
+        np.testing.assert_allclose(actual=actual, desired=desired)
 
     def test_relu(self):
-        """Test - Comapare ReLU function to Tensorflow ReLU function"""
-        x = np.random.randn(10)
+        x = np.array([
+            [0.6, -0.2, 0.0],
+            [1.5, -2.0, -0.8],
+            [0.6, -1.2, 1.5]
+        ])
 
-        tf_relu = tf.nn.relu(x).numpy()
-        custom_relu = activation_functions.relu(x)
+        desired = np.array([
+            [0.6, 0.0, 0.0],
+            [1.5, 0.0, 0.0],
+            [0.6, 0.0, 1.5]
+        ])
 
-        np.testing.assert_allclose(custom_relu, tf_relu, 1e-5)
+        actual = af.relu(x=x)
+
+        np.testing.assert_allclose(actual=actual, desired=desired)
+
+    def test_relu_derivative(self):
+        x = np.array([
+            [0.6, -0.2, 0.0],
+            [1.5, -2.0, -0.8],
+            [0.6, -1.2, 1.5]
+        ])
+
+        output_error = np.array([
+            [0.1, 0.2, 0.3],
+            [-0.1, -0.2, -0.3],
+            [1.2, -1.5, 2.5]
+        ])
+
+        desired = np.array([
+            [0.1, 0.0, 0.3],
+            [-0.1, 0.0, 0.0],
+            [1.2, 0.0, 2.5]
+        ])
+
+        actual = af.relu_derivative(x=x, output_error=output_error)
+
+        np.testing.assert_allclose(actual=actual, desired=desired)
+
+    def test_leaky_relu(self):
+        x = np.array([
+            [0.6, -0.2, 0.0],
+            [1.5, -2.0, -0.8],
+            [0.6, -1.2, 1.5]
+        ])
+
+        desired = np.array([
+            [0.6, -0.002, 0.0],
+            [1.5, -0.02, -0.008],
+            [0.6, -0.012, 1.5]
+        ])
+
+        actual = af.leaky_relu(x=x)
+
+        np.testing.assert_allclose(actual=actual, desired=desired)
+
+    def test_leaky_relu_derivative(self):
+        x = np.array([
+            [0.6, -0.2, 0.0],
+            [1.5, -2.0, -0.8],
+            [0.6, -1.2, 1.5]
+        ])
+
+        output_error = np.array([
+            [0.1, 0.2, 0.3],
+            [-0.1, -0.2, -0.3],
+            [1.2, -1.5, 2.5]
+        ])
+
+        desired = np.array([
+            [0.1, 0.002, 0.3],
+            [-0.1, -0.002, -0.003],
+            [1.2, -0.015, 2.5]
+        ])
+
+        acutal = af.leaky_relu_derivative(x=x, output_error=output_error)
+
+        np.testing.assert_allclose(actual=acutal, desired=desired)
 
     def test_sigmoid(self):
-        """Test - Compare Sigmoid function to Tensorflow Sigmoid function."""
-        x = np.random.randn(10)
+        x = np.array([
+            [0.6, -0.2, 0.0],
+            [1.5, -2.0, -0.8],
+            [0.6, -1.2, 1.5]
+        ])
 
-        tf_sigmoid = tf.sigmoid(x).numpy()
-        custom_sigmoid = activation_functions.sigmoid(x)
+        desired = np.array([
+            [0.6456563062, 0.4501660027, 0.5],
+            [0.8175744762, 0.1192029220, 0.3100255189],
+            [0.6456563062, 0.2314752165, 0.8175744762]
+        ])
 
-        np.testing.assert_allclose(custom_sigmoid, tf_sigmoid, 1e-5)
+        actual = af.sigmoid(x=x)
 
-    def test_tanh_gradients(self):
-        """Test - Compare Tanh derivatives to Tensorflow Tanh derivatives."""
-        x = np.random.randn(10)
+        np.testing.assert_allclose(actual=actual, desired=desired)
 
-        tf_x = tf.constant(x, dtype=tf.float32)
+    def test_sigmoid_derivative(self):
+        x = np.array([
+            [0.6, -0.2, 0.0],
+            [1.5, -2.0, -0.8],
+            [0.6, -1.2, 1.5]
+        ])
 
-        with tf.GradientTape() as tape:
-            tape.watch(tf_x)
-            tf_tanh = tf.tanh(tf_x)
+        output_error = np.array([
+            [0.1, 0.2, 0.3],
+            [-0.1, -0.2, -0.3],
+            [1.2, -1.5, 2.5]
+        ])
 
-        tf_grads = tape.gradient(tf_tanh, tf_x).numpy()
-        custom_grads = activation_functions.tanh_derivative(x, 1)
+        desired = np.array([
+            [0.02287842405, 0.04950331454, 0.075],
+            [-0.01491464521, -0.02099871708, -0.06417290896],
+            [0.2745410885, -0.2668416610, 0.3728661302]
+        ])
 
-        np.testing.assert_allclose(custom_grads, tf_grads, 1e-5)
+        actual = af.sigmoid_derivative(x=x, output_error=output_error)
 
-    def test_relu_gradients(self):
-        """Test - Compare ReLU derivatives to Tensorflow ReLU derivatives."""
-        x = np.random.randn(10)
+        np.testing.assert_allclose(actual=actual, desired=desired)
 
-        tf_x = tf.constant(x, dtype=tf.float32)
+    def test_linear(self):
+        x = np.array([
+            [0.6, -0.2, 0.0],
+            [1.5, -2.0, -0.8],
+            [0.6, -1.2, 1.5]
+        ])
 
-        with tf.GradientTape() as tape:
-            tape.watch(tf_x)
-            tf_relu = tf.nn.relu(tf_x)
+        actual = af.linear(x=x)
 
-        tf_grads = tape.gradient(tf_relu, tf_x).numpy()
-        custom_grads = activation_functions.relu_derivative(x, 1)
+        np.testing.assert_allclose(actual=actual, desired=x)
 
-        np.testing.assert_allclose(custom_grads, tf_grads, 1e-5)
+    def test_linear_derivative(self):
+        x = np.array([
+            [0.6, -0.2, 0.0],
+            [1.5, -2.0, -0.8],
+            [0.6, -1.2, 1.5]
+        ])
 
-    def test_sigmoid_gradients(self):
-        """Test - Compare Sigmoid derivatives to Tensorflow Sigmoid derivatives."""
-        x = np.random.randn(10)
+        output_error = np.array([
+            [0.1, 0.2, 0.3],
+            [-0.1, -0.2, -0.3],
+            [1.2, -1.5, 2.5]
+        ])
 
-        tf_x = tf.constant(x, dtype=tf.float32)
+        actual = af.linear_derivative(x=x, output_error=output_error)
 
-        with tf.GradientTape() as tape:
-            tape.watch(tf_x)
-            tf_sigmoid = tf.sigmoid(tf_x)
+        np.testing.assert_allclose(actual=actual, desired=output_error)
 
-        tf_grads = tape.gradient(tf_sigmoid, tf_x).numpy()
-        custom_grads = activation_functions.sigmoid_derivative(x, 1)
-        np.testing.assert_allclose(custom_grads, tf_grads, 1e-5)
+    def test_softmax_cce(self):
+        x = np.array([
+            [0.6, -0.2, 0.0],
+            [1.5, -2.0, -0.8],
+            [0.6, -1.2, 1.5]
+        ])
+
+        desired = np.array([
+            [0.5004652825, 0.2248735470, 0.2746611705],
+            [0.8845986036, 0.02671256321, 0.08868883316],
+            [0.2758695270, 0.04560092611, 0.6785295469]
+        ])
+
+        actual = af.softmax_with_categorical_cross_entropy(x=x)
+
+        np.testing.assert_allclose(actual=actual, desired=desired)
+
+    def test_softmax_cce_derivative(self):
+        x = np.array([
+            [0.6, -0.2, 0.0],
+            [1.5, -2.0, -0.8],
+            [0.6, -1.2, 1.5]
+        ])
+
+        output_error = np.array([
+            [0.1, 0.2, 0.3],
+            [-0.1, -0.2, -0.3],
+            [1.2, -1.5, 2.5]
+        ])
+
+        # Because the gradients are calculated by CCE derivative function
+        # we expect the output error
+
+        actual = af.softmax_with_categorical_cross_entropy_derivative(
+            x=x,
+            output_error=output_error
+        )
+
+        np.testing.assert_allclose(actual=actual, desired=output_error)
 
     def test_get_function_correct_function_name(self):
         """Test - Valid activation names should not throw an exception."""
         try:
-            activation_functions.get_function('tanh')
+            af.get_function('tanh')
         except ValueError:
             self.fail("activation_functions.get_function() should not throw" +
                       " a ValueError with argument: tanh")
         try:
-            activation_functions.get_function('relu')
+            af.get_function('relu')
         except ValueError:
             self.fail("activation_functions.get_function() should not throw" +
                       " a ValueError with argument: relu")
         try:
-            activation_functions.get_function('sigmoid')
+            af.get_function('sigmoid')
         except ValueError:
             self.fail("activation_functions.get_function() should not throw" +
                       " a ValueError with argument: sigmoid")
         try:
-            activation_functions.get_function('softmax')
+            af.get_function('softmax')
         except ValueError:
             self.fail("activation_functions.get_function() should not throw" +
                       " a ValueError with argument: softmax")
@@ -125,19 +280,19 @@ class TestActivations(unittest.TestCase):
     def test_get_function_incorrect_function_name(self):
         """Test - Invalid activation names should thrown an exception."""
         try:
-            activation_functions.get_function('mse')
+            af.get_function('mse')
             self.fail("activation_function.get_function() should not allow" +
                       " argument: 'mse'")
         except ValueError:
             pass
         try:
-            activation_functions.get_function('')
+            af.get_function('')
             self.fail("activation_function.get_function() should not allow" +
                       " empty string argument.")
         except ValueError:
             pass
         try:
-            activation_functions.get_function(None)
+            af.get_function(None)
             self.fail("activation_function.get_function() should not allow" +
                       " None argument")
         except ValueError:
