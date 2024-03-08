@@ -1,9 +1,10 @@
 """Tests for loss functions."""
 
 
-import unittest
 import os
 import sys
+import unittest
+
 import numpy as np
 
 # Get the absolute path of the current script
@@ -28,6 +29,10 @@ class TestLosses(unittest.TestCase):
     """Tests for loss functions."""
 
     def test_mse(self):
+        """
+        Test - compare outputs of Mean Squared Error loss function to
+        manually calculated values.
+        """
         y_true = np.array([
             [0.6],
             [1.2],
@@ -50,6 +55,10 @@ class TestLosses(unittest.TestCase):
         self.assertAlmostEqual(actual, desired)
 
     def test_mse_derivative(self):
+        """
+        Test - compare outputs of Mean Squared Error loss derivative function
+        to manually calculated values.
+        """
         y_true = np.array([
             [0.6],
             [1.2],
@@ -79,6 +88,10 @@ class TestLosses(unittest.TestCase):
         np.testing.assert_allclose(actual=actual, desired=desired)
 
     def test_cce_with_softmax(self):
+        """
+        Test - compare outputs of Categorical Cross Entropy loss function to
+        manually calculated values.
+        """
         y_true = np.array([
             [0, 1, 0],
             [1, 0, 0],
@@ -104,6 +117,10 @@ class TestLosses(unittest.TestCase):
         self.assertAlmostEqual(actual, desired)
 
     def test_cce_with_softmax_derivative(self):
+        """
+        Test - compare outputs of Categorical Cross Entropy loss derivative
+        function to manually calculated values.
+        """
         y_true = np.array([
             [0, 1, 0],
             [1, 0, 0],
@@ -136,6 +153,10 @@ class TestLosses(unittest.TestCase):
         np.testing.assert_allclose(actual=actual, desired=desired)
 
     def test_bce(self):
+        """
+        Test - compare outputs of Binary Cross Entropy loss function to
+        manually calculated values.
+        """
         y_true = np.array([
             [0],
             [1],
@@ -158,6 +179,10 @@ class TestLosses(unittest.TestCase):
         self.assertAlmostEqual(desired, actual)
 
     def test_bce_derivative(self):
+        """
+        Test - compare outputs of Binary Cross Entropy loss derivative
+        function to manually calculated values.
+        """
         y_true = np.array([
             [0],
             [1],

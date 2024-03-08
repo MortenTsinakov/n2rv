@@ -1,9 +1,10 @@
 """Tests for activations functions."""
 
 
-import unittest
 import os
 import sys
+import unittest
+
 import numpy as np
 
 # Get the absolute path of the current script
@@ -20,7 +21,6 @@ sys.path += [os.path.dirname(name) for name in paths]
 # Import files for testing
 from n2rv.activations import activation_functions as af
 
-
 np.random.seed(0)
 
 
@@ -28,6 +28,10 @@ class TestActivations(unittest.TestCase):
     """Tests for activation functions."""
 
     def test_tanh(self):
+        """
+        Test - compare the outputs of Tanh activation function to
+        manually calculated values.
+        """
         x = np.array([
             [0.6, -0.2, 0.0],
             [1.5, -2.0, -0.8],
@@ -45,6 +49,10 @@ class TestActivations(unittest.TestCase):
         np.testing.assert_allclose(actual=actual, desired=desired)
 
     def test_tanh_derivative(self):
+        """
+        Test - compare the outputs of Tanh activation derivative function to
+        manually calculated values.
+        """
         x = np.array([
             [0.6, -0.2, 0.0],
             [1.5, -2.0, -0.8],
@@ -66,6 +74,10 @@ class TestActivations(unittest.TestCase):
         np.testing.assert_allclose(actual=actual, desired=desired)
 
     def test_relu(self):
+        """
+        Test - compare the outputs of ReLU activation function to
+        manually calculated values.
+        """
         x = np.array([
             [0.6, -0.2, 0.0],
             [1.5, -2.0, -0.8],
@@ -83,6 +95,10 @@ class TestActivations(unittest.TestCase):
         np.testing.assert_allclose(actual=actual, desired=desired)
 
     def test_relu_derivative(self):
+        """
+        Test - compare the outputs of ReLU activation derivative function to
+        manually calculated values.
+        """
         x = np.array([
             [0.6, -0.2, 0.0],
             [1.5, -2.0, -0.8],
@@ -106,6 +122,10 @@ class TestActivations(unittest.TestCase):
         np.testing.assert_allclose(actual=actual, desired=desired)
 
     def test_leaky_relu(self):
+        """
+        Test - compare the outputs of Leaky ReLU activation function to
+        manually calculated values.
+        """
         x = np.array([
             [0.6, -0.2, 0.0],
             [1.5, -2.0, -0.8],
@@ -123,6 +143,10 @@ class TestActivations(unittest.TestCase):
         np.testing.assert_allclose(actual=actual, desired=desired)
 
     def test_leaky_relu_derivative(self):
+        """
+        Test - compare the outputs of Leaky ReLU activation derivative
+        function to manually calculated values.
+        """
         x = np.array([
             [0.6, -0.2, 0.0],
             [1.5, -2.0, -0.8],
@@ -146,6 +170,10 @@ class TestActivations(unittest.TestCase):
         np.testing.assert_allclose(actual=acutal, desired=desired)
 
     def test_sigmoid(self):
+        """
+        Test - compare the outputs of Sigmoid activation function to
+        manually calculated values.
+        """
         x = np.array([
             [0.6, -0.2, 0.0],
             [1.5, -2.0, -0.8],
@@ -163,6 +191,10 @@ class TestActivations(unittest.TestCase):
         np.testing.assert_allclose(actual=actual, desired=desired)
 
     def test_sigmoid_derivative(self):
+        """
+        Test - compare the outputs of Sigmoid activation derivative
+        function to manually calculated values.
+        """
         x = np.array([
             [0.6, -0.2, 0.0],
             [1.5, -2.0, -0.8],
@@ -186,6 +218,10 @@ class TestActivations(unittest.TestCase):
         np.testing.assert_allclose(actual=actual, desired=desired)
 
     def test_linear(self):
+        """
+        Test - compare the outputs of Linear activation function to
+        manually calculated values.
+        """
         x = np.array([
             [0.6, -0.2, 0.0],
             [1.5, -2.0, -0.8],
@@ -197,6 +233,10 @@ class TestActivations(unittest.TestCase):
         np.testing.assert_allclose(actual=actual, desired=x)
 
     def test_linear_derivative(self):
+        """
+        Test - compare the outputs of Linear activation derivative
+        function to manually calculated values.
+        """
         x = np.array([
             [0.6, -0.2, 0.0],
             [1.5, -2.0, -0.8],
@@ -214,6 +254,10 @@ class TestActivations(unittest.TestCase):
         np.testing.assert_allclose(actual=actual, desired=output_error)
 
     def test_softmax_cce(self):
+        """
+        Test - compare the outputs of Softmax activation function to
+        manually calculated values.
+        """
         x = np.array([
             [0.6, -0.2, 0.0],
             [1.5, -2.0, -0.8],
@@ -231,6 +275,10 @@ class TestActivations(unittest.TestCase):
         np.testing.assert_allclose(actual=actual, desired=desired)
 
     def test_softmax_cce_derivative(self):
+        """
+        Test - compare the outputs of Softmax activation function to
+        manually calculated values.
+        """
         x = np.array([
             [0.6, -0.2, 0.0],
             [1.5, -2.0, -0.8],
@@ -243,8 +291,8 @@ class TestActivations(unittest.TestCase):
             [1.2, -1.5, 2.5]
         ])
 
-        # Because the gradients are calculated by CCE derivative function
-        # we expect the output error
+        # Because the gradients are calculated by the CCE derivative function
+        # we expect back only the output error (no calculation in this one)
 
         actual = af.softmax_with_categorical_cross_entropy_derivative(
             x=x,
