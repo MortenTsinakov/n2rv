@@ -107,13 +107,15 @@ if __name__ == "__main__":
         optimizer=Adam(),
         metrics=[Accuracy(decimal_places=4)],
     )
-    model.fit(
+    loss = model.fit(
         x_train=x_train,
         y_train=y_train,
         epochs=100,
         print_metrics=True,
         batch_size=32
     )
+
+    print(f"Final training loss: {loss}")
 
     print()
     print("Evaluation on test data")
