@@ -87,10 +87,12 @@ if __name__ == "__main__":
     loss = model.fit(
         x_train=x_train,
         y_train=y_train,
-        epochs=500,
+        epochs=200,
         print_metrics=False,
         batch_size=32
     )
+
+    print(f"Final training loss: {loss}")
 
     print()
     print("Evaluation on test data")

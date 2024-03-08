@@ -124,6 +124,7 @@ class Model:
             self.loss /= n_batches
             if print_metrics:
                 self.print_metrics(epoch + 1, epochs)
+            self.metrics.reset_metrics()
         return self.loss
 
     def forward(self, x: np.ndarray) -> None:
@@ -173,7 +174,6 @@ class Model:
         for k, v in metrics_dict.items():
             metrics_to_print.append(f"{k}: {v}")
         print(f"Epoch: {epoch}/{epochs} Train - {metrics_to_print}")
-        self.metrics.reset_metrics()
 
     # VALIDATION FUNCTIONS
 
