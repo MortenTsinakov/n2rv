@@ -5,24 +5,25 @@ The Titanic dataset can be downloaded from:
 https://www.kaggle.com/datasets/yasserh/titanic-dataset
 """
 
-import sys
 import os
+import sys
+
 import pandas as pd
 
 # Add the project directory to the Python path
-project_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+project_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.append(project_dir)
 
-from models.model import Model
-from layers.input import Input
-from layers.dense import Dense
-from optimizers.adam import Adam
+from n2rv.layers.dense import Dense
+from n2rv.layers.input import Input
+from n2rv.models.model import Model
+from n2rv.optimizers.adam import Adam
 
 
 def import_data(filename: str) -> pd.DataFrame:
     """
     Import the dataset
-    
+
     inputs:
         filename (str) - the name of the dataset file
     return:
@@ -41,7 +42,8 @@ def drop_unnecessary_columns(data: pd.DataFrame) -> pd.DataFrame:
     return:
         Pandas DataFrame object with unnecessary columns dropped
     """
-    return data.drop(["PassengerId", "Name", "Cabin", "Ticket", "Embarked"], axis=1)
+    return data.drop(["PassengerId", "Name", "Cabin", "Ticket", "Embarked"],
+                     axis=1)
 
 
 def impute_missing_values_with_mean(data: pd.DataFrame) -> pd.DataFrame:
@@ -64,7 +66,8 @@ def categorize_string_values(data: pd.DataFrame) -> pd.DataFrame:
     inputs:
         data (pd.DataFrame) - imported data
     return:
-        Pandas DataFrame object where string values have been replaced with numerical categories
+        Pandas DataFrame object where string values have been replaced with
+            numerical categories
     """
     categories = data["Sex"].unique()
     mapping = {}
@@ -77,15 +80,17 @@ def categorize_string_values(data: pd.DataFrame) -> pd.DataFrame:
 def normalize_values(data: pd.DataFrame) -> pd.DataFrame:
     """
     Normalize values to range (0, 1)
-    
+
     inputs:
         data (pd.DataFrame) - imported data
     return:
         Pandas DataFrame object with normalized column values
     """
     cols = ["Age", "SibSp", "Parch", "Fare"]
-    data[cols] = (data[cols] - data[cols].min()) / (data[cols].max() - data[cols].min())
+    data[cols] = (data[cols] - data[cols].min()) /\
+        (data[cols].max() - data[cols].min())
     return data
+
 
 def get_data(filename: str, random_state: float = 42) -> pd.DataFrame:
     """
@@ -114,7 +119,8 @@ def train_test_split(data: pd.DataFrame, split: float = 0.7) -> tuple:
         data (pd.DataFrame) - imported data
         split (float) - size of the training set
     return:
-        tuple of training features, trainging labels, testing features and testing labels
+        tuple of training features, trainging labels, testing features and
+            testing labels
     """
     n = int(len(data) * split)
     x_train = data.drop(["Survived"], axis=1)[:n].to_numpy()
@@ -133,12 +139,15 @@ def get_model() -> Model:
         Model object
     """
     inputs = Input(shape=(6,))
-    x = Dense(output_size=64,
-              activation="relu",
-              weights_initializer="he_normal")(inputs)
-    outputs = Dense(output_size=1,
-                    activation="sigmoid",
-                    weights_initializer="xavier_normal")(x)
+    x = Dense(
+        output_size=64,
+        activation="relu",
+        weights_initializer="he_normal")(inputs)
+    outputs = Dense(
+        output_size=1,
+        activation="sigmoid",
+        weights_initializer="xavier_normal"
+    )(x)
 
     return Model(inputs=inputs, outputs=outputs)
 
@@ -150,8 +159,7 @@ if __name__ == "__main__":
     x_train, y_train, x_test, y_test = train_test_split(data, split=0.7)
 
     model = get_model()
-    model.compile(loss_fn="binary_cross_entropy",
-                  optimizer=Adam())
+    model.compile(loss_fn="binary_cross_entropy", optimizer=Adam())
     loss = model.fit(
         x_train=x_train,
         y_train=y_train,

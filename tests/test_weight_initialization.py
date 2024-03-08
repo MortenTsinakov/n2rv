@@ -18,7 +18,7 @@ paths = [
 sys.path += [os.path.dirname(name) for name in paths]
 
 # Import files for testing
-from weight_initialization import weight_initialization as w_i
+from n2rv.weight_initialization import weight_initialization as w_i
 np.random.seed(0)
 
 

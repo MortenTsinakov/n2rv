@@ -22,8 +22,8 @@ paths = [
 sys.path += [os.path.dirname(name) for name in paths]
 
 # Import files for testing
-from activations import activation_functions
-from losses import loss_functions
+from n2rv.activations import activation_functions
+from n2rv.losses import loss_functions
 
 np.random.seed(0)
 

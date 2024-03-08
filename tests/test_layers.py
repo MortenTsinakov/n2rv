@@ -17,8 +17,8 @@ paths = [
 sys.path += [os.path.dirname(name) for name in paths]
 
 # Import files for testing
-from layers.dense import Dense
-from layers.input import Input
+from n2rv.layers.dense import Dense
+from n2rv.layers.input import Input
 
 
 class TestLayers(unittest.TestCase):
@@ -27,7 +27,7 @@ class TestLayers(unittest.TestCase):
         """Test - Dense layer output_size=None throws an exception."""
         try:
             Dense(output_size=None,
-                        activation='relu')
+                  activation='relu')
             self.fail("Initializing Dense layer with output_size parameter " +
                       "as None should throw an exception.")
         except ValueError:
