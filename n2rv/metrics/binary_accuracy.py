@@ -35,7 +35,7 @@ class BinaryAccuracy(Metrics):
             true (np.ndarray) - true labels
             pred (np.ndarray) - predicted labels
         """
-        self.correct += np.count_nonzero((pred >= self.threshold) == true)
+        self.correct += np.sum((pred >= self.threshold) == true)
         self.total += len(true)
 
     def get_metric(self) -> float:
