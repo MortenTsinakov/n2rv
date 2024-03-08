@@ -39,7 +39,8 @@ To run the program in a virtual environment, run those commands from the project
   ```
 5. When finished, deactivate the virtual environment: ```deactivate```
 
-For more info about how to use different components, check out the documentation
+For more info about how to use different components, check out the documentation.
+To build a model, it's easiest to do it in the main.py file.
 
 #### Documentation
 
