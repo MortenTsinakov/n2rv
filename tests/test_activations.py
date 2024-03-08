@@ -5,7 +5,6 @@ import unittest
 import os
 import sys
 import numpy as np
-# Don't print Tensorflow logs about GPUs and other such things.
 
 # Get the absolute path of the current script
 current_script_dir = os.path.dirname(os.path.abspath(__file__))

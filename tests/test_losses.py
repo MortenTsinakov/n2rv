@@ -5,9 +5,6 @@ import unittest
 import os
 import sys
 import numpy as np
-# Don't print Tensorflow logs about GPUs and other such things.
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
-import tensorflow as tf
 
 # Get the absolute path of the current script
 current_script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -22,102 +19,211 @@ paths = [
 sys.path += [os.path.dirname(name) for name in paths]
 
 # Import files for testing
-from n2rv.activations import activation_functions
-from n2rv.losses import loss_functions
+from n2rv.losses import loss_functions as lf
 
 np.random.seed(0)
 
 
 class TestLosses(unittest.TestCase):
     """Tests for loss functions."""
+
     def test_mse(self):
-        """Test - Compare Mean Square Error loss function to Tensorflow MSE function."""
-        y_true = np.random.rand(10)
-        y_pred = np.random.rand(10)
+        y_true = np.array([
+            [0.6],
+            [1.2],
+            [-0.8],
+            [0.0],
+            [-1.2]
+        ])
 
-        tf_mse = tf.losses.mean_squared_error(y_true, y_pred).numpy()
-        custom_mse = loss_functions.mse(y_true, y_pred)
+        y_pred = np.array([
+            [-0.1],
+            [0.9],
+            [-0.2],
+            [0.2],
+            [-1.1]
+        ])
 
-        np.testing.assert_almost_equal(custom_mse, tf_mse, 1e-5)
+        desired = 0.198
+        actual = lf.mse(y_pred=y_pred, y_true=y_true)
 
-    def test_softmax_categorical_cross_entropy(self):
-        """Test - Compare Softmax + Catgorical Cross-Entropy to Tensorflow SM + CCE."""
-        y_pred = activation_functions.softmax_with_categorical_cross_entropy(np.random.rand(1, 5))
-        y_true = np.array([[0, 0, 1, 0, 0]])
+        self.assertAlmostEqual(actual, desired)
 
-        tf_cce = tf.keras.losses.categorical_crossentropy(y_true, y_pred).numpy()
-        custom_cce = loss_functions.categorical_cross_entropy_with_softmax(y_true, y_pred)
+    def test_mse_derivative(self):
+        y_true = np.array([
+            [0.6],
+            [1.2],
+            [-0.8],
+            [0.0],
+            [-1.2]
+        ])
 
-        np.testing.assert_allclose(custom_cce, tf_cce, 1e-5)
+        y_pred = np.array([
+            [-0.1],
+            [0.9],
+            [-0.2],
+            [0.2],
+            [-1.1]
+        ])
 
-    def test_mse_derivatives(self):
-        """Test - Compare Mean Square Error function derivatives to Tensorflow MSE derivatives."""
-        y_true = np.random.rand(25)
-        y_pred = np.random.rand(25)
+        desired = np.array([
+            [-0.28],
+            [-0.12],
+            [0.24],
+            [0.08],
+            [0.04]
+        ])
 
-        tf_y_true = tf.constant(y_true, dtype=tf.float32)
-        tf_y_pred = tf.constant(y_pred, dtype=tf.float32)
+        actual = lf.mse_derivative(y_pred=y_pred, y_true=y_true)
 
-        with tf.GradientTape() as tape:
-            tape.watch(tf_y_true)
-            tf_loss = tf.losses.mean_squared_error(tf_y_true, tf_y_pred)
+        np.testing.assert_allclose(actual=actual, desired=desired)
 
-        tf_grads = tape.gradient(tf_loss, tf_y_true).numpy()
-        # Tensorflow calculates the MSE derivatives with the the opposite sign
-        custom_grads = -loss_functions.mse_derivative(y_true, y_pred)
+    def test_cce_with_softmax(self):
+        y_true = np.array([
+            [0, 1, 0],
+            [1, 0, 0],
+            [0, 0, 1],
+            [1, 0, 0],
+            [0, 1, 0]
+        ])
 
-        np.testing.assert_allclose(custom_grads, tf_grads, 1e-5)
+        y_pred = np.array([
+            [0.1, 0.8, 0.1],
+            [0.6, 0.3, 0.1],
+            [0.5, 0.4, 0.1],
+            [0.7, 0.2, 0.1],
+            [0.7, 0.3, 0.0]
+        ])
 
-    def test_softmax_categorical_cross_entropy_derivatives(self):
-        """
-        Test - Compare Softmax + Categorical Cross-Entropy derivatives to Tensorflow 
-        SM+CCE derivatives.
-        """
-        logits = np.random.rand(1, 5)
-        y_true = np.array([0, 0, 1, 0, 0])
+        desired = 0.9194404033
+        actual = lf.categorical_cross_entropy_with_softmax(
+            y_pred=y_pred,
+            y_true=y_true
+        )
 
-        tf_logits = tf.constant(logits, dtype=tf.float32)
+        self.assertAlmostEqual(actual, desired)
 
-        with tf.GradientTape() as tape:
-            tape.watch(tf_logits)
-            tf_loss = tf.nn.softmax_cross_entropy_with_logits(labels=y_true, logits=tf_logits)
+    def test_cce_with_softmax_derivative(self):
+        y_true = np.array([
+            [0, 1, 0],
+            [1, 0, 0],
+            [0, 0, 1],
+            [1, 0, 0],
+            [0, 1, 0]
+        ])
 
-        tf_grads = tape.gradient(tf_loss, tf_logits).numpy()
+        y_pred = np.array([
+            [0.1, 0.8, 0.1],
+            [0.6, 0.3, 0.1],
+            [0.5, 0.4, 0.1],
+            [0.7, 0.2, 0.1],
+            [0.7, 0.3, 0.0]
+        ])
 
-        y_pred = activation_functions.softmax_with_categorical_cross_entropy(logits)
-        custom_grads = loss_functions.categorical_cross_entropy_with_softmax_derivative(y_true, y_pred)
+        desired = np.array([
+            [0.1, -0.2, 0.1],
+            [-0.4, 0.3, 0.1],
+            [0.5, 0.4, -0.9],
+            [-0.3, 0.2, 0.1],
+            [0.7, -0.7, 0.0]
+        ])
 
-        np.testing.assert_allclose(custom_grads, tf_grads, 1e-5)
+        actual = lf.categorical_cross_entropy_with_softmax_derivative(
+            y_pred=y_pred,
+            y_true=y_true
+        )
+
+        np.testing.assert_allclose(actual=actual, desired=desired)
+
+    def test_bce(self):
+        y_true = np.array([
+            [0],
+            [1],
+            [0],
+            [1],
+            [0]
+        ])
+
+        y_pred = np.array([
+            [0.1],
+            [0.6],
+            [0.5],
+            [0.7],
+            [0.7]
+        ])
+
+        desired = 0.5739962136
+        actual = lf.binary_cross_entropy(y_pred=y_pred, y_true=y_true)
+
+        self.assertAlmostEqual(desired, actual)
+
+    def test_bce_derivative(self):
+        y_true = np.array([
+            [0],
+            [1],
+            [0],
+            [1],
+            [0]
+        ])
+
+        y_pred = np.array([
+            [0.1],
+            [0.6],
+            [0.5],
+            [0.7],
+            [0.7]
+        ])
+
+        desired = np.array([
+            [1.111111111],
+            [-1.666666667],
+            [2.0],
+            [-1.428571429],
+            [3.333333333]
+        ])
+
+        actual = lf.binary_cross_entropy_derivative(
+            y_pred=y_pred,
+            y_true=y_true
+        )
+
+        np.testing.assert_allclose(actual=actual, desired=desired)
 
     def test_get_loss_correct_function_name(self):
-        """Test - Requesting a loss function with correct name doesn't throw an exception."""
+        """
+        Test - Requesting a loss function with correct name doesn't throw
+        an exception.
+        """
         try:
-            loss_functions.get_loss('mse')
+            lf.get_loss('mse')
         except ValueError:
             self.fail("loss_functions.get_loss() should not throw" +
                       " a ValueError with argument: mse")
         try:
-            loss_functions.get_loss('categorical_cross_entropy')
+            lf.get_loss('categorical_cross_entropy')
         except ValueError:
             self.fail("loss_functions.get_loss() should not throw" +
                       " a ValueError with argument: categorical cross entropy")
 
     def test_get_function_incorrect_function_name(self):
-        """Test - Requesting a loss function with incorrect name throws an exception."""
+        """
+        Test - Requesting a loss function with incorrect name throws an
+        exception.
+        """
         try:
-            loss_functions.get_loss('relu')
+            lf.get_loss('relu')
             self.fail("loss_functions.get_loss() should not allow" +
                       " argument: 'relu'")
         except ValueError:
             pass
         try:
-            loss_functions.get_loss('')
+            lf.get_loss('')
             self.fail("loss_functions.get_loss() should not allow" +
                       " empty string argument.")
         except ValueError:
             pass
         try:
-            loss_functions.get_loss(None)
+            lf.get_loss(None)
             self.fail("loss_functions.get_loss() should not allow" +
                       " None argument")
         except ValueError:
