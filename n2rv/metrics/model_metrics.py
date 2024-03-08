@@ -1,7 +1,7 @@
 """The model metrics file"""
 
 import numpy as np
-from n2rv.exceptions.exception import DuplicateItemsError
+from n2rv.exceptions.exception import DuplicateItemsError, ShapeMismatchError
 from n2rv.metrics.metrics import Metrics
 
 
@@ -25,6 +25,12 @@ class ModelMetrics:
             true (np.ndarray) - the true values
             pred (np.ndarray) - the predicted values
         """
+        if len(true) != len(pred):
+            raise ShapeMismatchError(
+                "The shapes of true values and predicted values in " +
+                "metrics update() function don't match: " +
+                f"{len(true)} != {len(pred)}"
+            )
         for metric in self.metrics_list:
             metric.update(true, pred)
 
