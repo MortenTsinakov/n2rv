@@ -19,6 +19,7 @@ from n2rv.layers.input import Input
 from n2rv.models.model import Model
 from n2rv.optimizers.adam import Adam
 from n2rv.metrics.binary_accuracy import BinaryAccuracy
+from n2rv.metrics.precision import Precision
 
 
 def import_data(filename: str) -> pd.DataFrame:
@@ -162,7 +163,7 @@ if __name__ == "__main__":
     model = get_model()
     model.compile(loss_fn="binary_cross_entropy",
                   optimizer=Adam(),
-                  metrics=[BinaryAccuracy()])
+                  metrics=[BinaryAccuracy(), Precision()])
     loss = model.fit(
         x_train=x_train,
         y_train=y_train,
