@@ -38,7 +38,7 @@ class Precision(Metrics):
         self.true_positives += np.sum((true == 1) & (pred >= self.threshold))
         self.false_positives += np.sum((true == 0) & (pred >= self.threshold))
 
-    def get_metric(self):
+    def get_metric(self) -> float:
         """
         Return the precision metric.
 
