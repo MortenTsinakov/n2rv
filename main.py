@@ -6,6 +6,8 @@ from n2rv.layers.dense import Dense
 from n2rv.layers.input import Input
 from n2rv.models.model import Model
 from n2rv.optimizers.adam import Adam
+from n2rv.metrics.binary_accuracy import BinaryAccuracy
+from n2rv.metrics.precision import Precision
 
 
 def get_label(data: list) -> int:
@@ -52,7 +54,9 @@ labels = np.array([get_label(sample) for sample in features]).reshape(-1, 1)
 x_train, y_train, x_test, y_test = train_test_split(features, labels)
 
 model = get_model()
-model.compile(loss_fn="binary_cross_entropy", optimizer=Adam())
+model.compile(loss_fn="binary_cross_entropy",
+              optimizer=Adam(),
+              metrics=[BinaryAccuracy(), Precision()])
 loss = model.fit(
     x_train=x_train,
     y_train=y_train,
@@ -60,14 +64,3 @@ loss = model.fit(
     print_metrics=True,
     batch_size=32
 )
-
-print(f"Final loss: {loss}")
-
-preds = model.predict(x_test)
-correct = 0
-for pred, true in zip(preds, y_test):
-    pred = np.round(pred)
-    if pred == true:
-        correct += 1
-
-print(f"Accuracy: {round(correct / len(y_test) * 100, 2)}%")

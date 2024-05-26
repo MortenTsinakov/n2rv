@@ -22,6 +22,7 @@ from n2rv.metrics.accuracy import Accuracy
 from n2rv.metrics.binary_accuracy import BinaryAccuracy
 from n2rv.metrics.mse import MSE
 from n2rv.metrics.mae import MAE
+from n2rv.metrics.precision import Precision
 from n2rv.metrics.model_metrics import ModelMetrics
 from n2rv.exceptions.exception import DuplicateItemsError, ShapeMismatchError
 
@@ -642,6 +643,136 @@ class TestMetrics(unittest.TestCase):
         mae = MAE()
 
         self.assertEqual(0, mae.get_metric())
+
+    def test_precision_metrics_correct_initialization(self):
+        """
+        Test - Precision metrics initialization works with correct
+        parameters
+        """
+        for i in range(11):
+            Precision(decimal_places=i, threshold=0.8)
+
+    def test_precision_metrics_decimal_places_incorrect_type_on_init(self):
+        """
+        Test - Initializing Precision with decimal plces of wrong type
+        raises a TypeError.
+        """
+        with self.assertRaises(TypeError):
+            Precision(decimal_places=2.5)
+        with self.assertRaises(TypeError):
+            Precision(decimal_places=[1])
+        with self.assertRaises(TypeError):
+            Precision("1")
+
+    def test_precision_metrics_decimal_places_incorrect_value_on_init(self):
+        """
+        Test - Initializing Precision with decimal places out of range
+        raises ValueError.
+        """
+        with self.assertRaises(ValueError):
+            Precision(decimal_places=-1)
+        with self.assertRaises(ValueError):
+            Precision(decimal_places=11)
+    
+    def test_precision_metrics_threshold_incorrect_type_on_init(self):
+        """
+        Test - Initializing Precision with threshold of wrong type
+        raises TypeError.
+        """
+        with self.assertRaises(TypeError):
+            Precision(threshold=7)
+        with self.assertRaises(TypeError):
+            Precision(threshold="0.5")
+        with self.assertRaises(TypeError):
+            Precision(threshold=[0.5])
+
+    def test_precision_metrics_counts_thresholds_correctly(self):
+        """
+        Test - Updating Precision with specific threshold works
+        correctly.
+        """
+        precision = Precision(decimal_places=10,
+                              threshold=0.8)
+        true = np.array([1, 0, 0, 1, 1, 0, 1, 0])
+        pred = np.array([0.9, 0.8, 0.7, 0.8, 0.1, 0.6, 1, 0.8])
+
+        expected = 3 / (3 + 2)
+
+        precision.update(true=true, pred=pred)
+        actual = precision.get_metric()
+
+        self.assertAlmostEqual(expected, actual)
+
+    def test_precision_metrics_update_once(self):
+        """
+        Test - Updating Precision metrics once return correct value.
+        """
+        precision = Precision(decimal_places=10)
+
+        true = np.array([1, 0, 0, 1, 0, 1, 1, 0, 0, 1])
+        pred = np.array([0.8, 1, 0, 0, 0.6, 0, 1, 0.9, 0, 1])
+
+        expected = 3 / (3 + 3)
+
+        precision.update(true=true, pred=pred)
+        actual = precision.get_metric()
+
+        self.assertAlmostEqual(expected, actual)
+
+    def test_precision_metrics_update_several_times(self):
+        """
+        Test - Updating Precision metrics several times returns
+        correct value.
+        """
+        precision = Precision(decimal_places=10)
+
+        true1 = np.array([1, 1, 0, 1, 0, 0, 1, 1, 0, 1])
+        pred1 = np.array([0.8, 0.2, 0.1, 0.9, 0.7, 1, 0.3, 1, 0.1, 1])
+        tp1 = 4
+        tp_fp1 = tp1 + 2
+
+        true2 = np.array([1, 0, 0, 1, 0, 1, 0])
+        pred2 = np.array([0.8, 1, 0.4, 0.45, 1, 0.7, 0.3])
+        tp2 = 2
+        tp_fp2 = tp2 + 2
+
+        true3 = np.array([0, 0, 1, 1, 0, 1, 0, 1])
+        pred3 = np.array([0.7, 0.2, 0.9, 0.5, 0.2, 1, 1, 0])
+        tp3 = 3
+        tp_fp3 = tp3 + 2
+
+        tp = tp1 + tp2 + tp3
+        tp_fp = tp_fp1 + tp_fp2 + tp_fp3
+        expected = tp / tp_fp
+
+        precision.update(true=true1, pred=pred1)
+        precision.update(true=true2, pred=pred2)
+        precision.update(true=true3, pred=pred3)
+        actual = precision.get_metric()
+
+        self.assertAlmostEqual(expected, actual)
+
+    def test_precision_metrics_reset_after_update(self):
+        """
+        Test - Resetting Precision after update returns 0
+        """
+        precision = Precision(decimal_places=10)
+
+        true = np.array([1, 0, 0, 1, 0, 1, 1, 0, 0, 1])
+        pred = np.array([1, 1, 0, 0, 1, 0, 1, 1, 0, 1])
+
+        precision.update(true=true, pred=pred)
+        precision.reset()
+
+        self.assertEqual(0, precision.get_metric())
+
+    def test_precision_metrics_no_updates(self):
+        """
+        Test - Precision metric returns 0 if there hasn't
+        been any updates.
+        """
+        precision = Precision(decimal_places=10)
+        self.assertEqual(0, precision.get_metric())
 
 
 if __name__ == "__main__":
