@@ -15,7 +15,7 @@ class Recall(Metrics):
 
         Inputs:
             decimal_places (int) - the number of decimal places to round
-                the result o.
+                the result to.
             threshold (float) - predictions >= to this value are considered as
                 true (1) and below this value as false (0)
         """
