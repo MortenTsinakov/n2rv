@@ -8,6 +8,7 @@ from n2rv.models.model import Model
 from n2rv.optimizers.adam import Adam
 from n2rv.metrics.binary_accuracy import BinaryAccuracy
 from n2rv.metrics.precision import Precision
+from n2rv.metrics.recall import Recall
 
 
 def get_label(data: list) -> int:
@@ -56,7 +57,7 @@ x_train, y_train, x_test, y_test = train_test_split(features, labels)
 model = get_model()
 model.compile(loss_fn="binary_cross_entropy",
               optimizer=Adam(),
-              metrics=[BinaryAccuracy(), Precision()])
+              metrics=[BinaryAccuracy(), Precision(), Recall()])
 loss = model.fit(
     x_train=x_train,
     y_train=y_train,
